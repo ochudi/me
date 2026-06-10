@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://ochudi.com
+
+# Sitemaps
+Sitemap: https://ochudi.com/sitemap.xml

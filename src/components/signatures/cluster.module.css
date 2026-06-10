@@ -1,0 +1,45 @@
+/* Hairline range sliders: a 1px track and a small square thumb, both in
+   currentColor so the parent's text colour drives them per theme. */
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 132px;
+  height: 9px;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+}
+
+.range::-webkit-slider-runnable-track {
+  height: 1px;
+  background: currentColor;
+}
+
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 8px;
+  height: 8px;
+  margin-top: -3.5px;
+  background: currentColor;
+  border: 0;
+  border-radius: 0;
+}
+
+.range::-moz-range-track {
+  height: 1px;
+  background: currentColor;
+}
+
+.range::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  border: 0;
+  border-radius: 0;
+}
+
+.range:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
