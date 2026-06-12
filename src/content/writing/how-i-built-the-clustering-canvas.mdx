@@ -1,0 +1,29 @@
+---
+title: How I built the clustering canvas
+description: k-means and DBSCAN running live on the homepage, written from scratch.
+date: "2026-06-05"
+tags: [clustering, engineering]
+---
+
+Placeholder introduction. The homepage runs k-means every frame and
+DBSCAN every tenth frame over 500 points. This essay walks through how,
+and why no clustering library was involved.
+
+The assignment step is the whole game. Flat typed arrays, no objects:
+
+```ts
+export function assign(
+  points: Float32Array,
+  centroids: Float32Array,
+  assignments: Int32Array,
+): boolean {
+  // nearest centroid per point, O(n * k) per frame
+}
+```
+
+Placeholder middle. Anchor springs preserve the blob structure the
+algorithms are there to find, and a spatial grid keeps DBSCAN region
+queries cheap enough to run while a slider drags.
+
+Placeholder ending. What 60 frames a second leaves room for, and what it
+does not. The real essay replaces this file.

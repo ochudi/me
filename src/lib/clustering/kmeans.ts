@@ -17,6 +17,53 @@ function sqDist(points: Float32Array, i: number, cx: number, cy: number): number
 }
 
 /**
+ * Fills centroids[have .. k) by D-squared sampling against the centroids
+ * already in place: each new centroid is a data point chosen with
+ * probability proportional to its squared distance from the nearest
+ * existing centroid.
+ */
+function seedByDistance(
+  points: Float32Array,
+  centroids: Float32Array,
+  have: number,
+  k: number,
+  rng: RNG,
+): void {
+  const n = points.length / 2;
+  if (n === 0) return;
+
+  const nearest = new Float32Array(n).fill(Infinity);
+  for (let c = 0; c < have; c++) {
+    const cx = centroids[c * 2];
+    const cy = centroids[c * 2 + 1];
+    for (let i = 0; i < n; i++) {
+      const d = sqDist(points, i, cx, cy);
+      if (d < nearest[i]) nearest[i] = d;
+    }
+  }
+
+  for (let c = have; c < k; c++) {
+    let total = 0;
+    for (let i = 0; i < n; i++) total += nearest[i];
+    let target = rng() * total;
+    let idx = 0;
+    for (let i = 0; i < n; i++) {
+      target -= nearest[i];
+      idx = i;
+      if (target <= 0) break;
+    }
+    const cx = points[idx * 2];
+    const cy = points[idx * 2 + 1];
+    centroids[c * 2] = cx;
+    centroids[c * 2 + 1] = cy;
+    for (let i = 0; i < n; i++) {
+      const d = sqDist(points, i, cx, cy);
+      if (d < nearest[i]) nearest[i] = d;
+    }
+  }
+}
+
+/**
  * k-means++ seeding: spreads initial centroids across the data so Lloyd's
  * iteration converges to well-separated clusters instead of collapsing.
  */
@@ -32,29 +79,29 @@ export function kmeansPlusPlus(
   const first = Math.min(n - 1, Math.floor(rng() * n));
   centroids[0] = points[first * 2];
   centroids[1] = points[first * 2 + 1];
-
-  const nearest = new Float32Array(n).fill(Infinity);
-  for (let c = 1; c < k; c++) {
-    const px = centroids[(c - 1) * 2];
-    const py = centroids[(c - 1) * 2 + 1];
-    let total = 0;
-    for (let i = 0; i < n; i++) {
-      const d = sqDist(points, i, px, py);
-      if (d < nearest[i]) nearest[i] = d;
-      total += nearest[i];
-    }
-    // Choose the next centroid with probability proportional to distance.
-    let target = rng() * total;
-    let idx = 0;
-    for (let i = 0; i < n; i++) {
-      target -= nearest[i];
-      idx = i;
-      if (target <= 0) break;
-    }
-    centroids[c * 2] = points[idx * 2];
-    centroids[c * 2 + 1] = points[idx * 2 + 1];
-  }
+  seedByDistance(points, centroids, 1, k, rng);
   return centroids;
+}
+
+/**
+ * Returns a centroid set resized to k while preserving the existing
+ * centroids, so clusters that survive a k change keep their identity (and
+ * any colour mapped to it). Shrinking truncates; growing seeds the new
+ * centroids by D-squared sampling away from the survivors.
+ */
+export function resizeCentroids(
+  points: Float32Array,
+  centroids: Float32Array,
+  k: number,
+  rng: RNG = Math.random,
+): Float32Array {
+  const current = centroids.length / 2;
+  if (k === current) return centroids;
+  if (k < current) return centroids.slice(0, k * 2);
+  const out = new Float32Array(k * 2);
+  out.set(centroids);
+  seedByDistance(points, out, current, k, rng);
+  return out;
 }
 
 /** Assign every point to its nearest centroid. Returns true if anything moved. */

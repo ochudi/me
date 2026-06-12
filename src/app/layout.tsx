@@ -1,17 +1,34 @@
-import type { Metadata } from "next";
-import { Newsreader } from "next/font/google";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import CommandPaletteLazy from "@/components/signatures/CommandPaletteLazy";
+import { getAll } from "@/lib/content";
 import "./globals.css";
 
+// display optional everywhere: text paints once in metric-matched
+// fallbacks on slow first visits instead of repainting when the webfont
+// lands, which would otherwise push LCP out by seconds on 4G.
+// No opsz axis: the optical-size variable files weigh 130kB+ each and
+// saturate a 4G connection past FCP. The default instances are a quarter
+// of that and indistinguishable at our sizes.
 const serif = Newsreader({
   subsets: ["latin"],
   style: ["normal", "italic"],
-  axes: ["opsz"],
   variable: "--font-serif",
-  display: "swap",
+  display: "optional",
+});
+
+const sans = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+  display: "optional",
+});
+
+const mono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "optional",
 });
 
 const description =
@@ -40,26 +57,18 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  // Relative canonical resolves against metadataBase per route, so every
+  // page declares its own URL as canonical.
+  alternates: {
+    canonical: "./",
+  },
 };
 
-const personJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Chukwudi Ofoma",
-  url: "https://ochudi.com",
-  jobTitle: "AI engineer, lecturer, researcher",
-  alumniOf: {
-    "@type": "CollegeOrUniversity",
-    name: "Pan-Atlantic University",
-  },
-  worksFor: {
-    "@type": "Organization",
-    name: "Plural Health",
-  },
-  sameAs: [
-    "https://github.com/ochudi",
-    "https://www.linkedin.com/in/ochudi",
-    "https://x.com/ochudi",
+// Browser chrome tint follows the user's scheme, matching the icon set.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAFAFA" },
+    { media: "(prefers-color-scheme: dark)", color: "#0A0A0A" },
   ],
 };
 
@@ -68,17 +77,40 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const toEntry = (e: { frontmatter: { title: string }; slug: string }) => ({
+    title: e.frontmatter.title,
+    slug: e.slug,
+  });
+  const paletteItems = {
+    work: getAll("work").map(toEntry),
+    writing: getAll("writing").map(toEntry),
+    teaching: getAll("teaching").map(toEntry),
+  };
+
   return (
     <html
       lang="en"
-      className={`${serif.variable} ${GeistSans.variable} ${GeistMono.variable}`}
+      className={`${serif.variable} ${sans.variable} ${mono.variable}`}
+      // The inline script below adds the js class before hydration, so the
+      // server and client className intentionally differ on this element.
+      suppressHydrationWarning
     >
       <body className="font-sans">
-        {children}
+        {/* Runs before first paint: scroll-reveal content is only hidden
+            when JavaScript is actually available. */}
         <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('js')",
+          }}
         />
+        <a
+          href="#content"
+          className="sr-only z-[100] border border-rule-dark bg-ink px-4 py-2 font-mono text-label uppercase text-page focus:not-sr-only focus:fixed focus:left-3 focus:top-3"
+        >
+          Skip to content
+        </a>
+        <div id="content">{children}</div>
+        <CommandPaletteLazy items={paletteItems} />
         <Analytics />
         <SpeedInsights />
       </body>

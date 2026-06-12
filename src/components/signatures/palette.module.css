@@ -1,0 +1,23 @@
+/* Terminal-style block cursor for the palette input. The real caret is
+   transparent; this block sits at the end of the typed text, which lines up
+   exactly because the input is monospaced. */
+.blockCursor {
+  display: inline-block;
+  width: 1ch;
+  height: 1.15em;
+  margin-left: 1px;
+  background: currentColor;
+  animation: blink 1.1s steps(2, start) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blockCursor {
+    animation: none;
+  }
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}

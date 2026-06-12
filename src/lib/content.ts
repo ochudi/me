@@ -17,15 +17,36 @@ const writingSchema = base.extend({
   tags: z.array(z.string()).optional().default([]),
 });
 
-const teachingSchema = base.extend({
-  institution: z.string().optional(),
-  term: z.string().optional(),
+// Teaching entries are lesson notes keyed by semester week.
+const teachingSchema = z.object({
+  title: z.string().min(1),
+  week: z.number().int().min(1),
+  summary: z.string().min(1),
+  subjects: z.array(z.string().min(1)).min(1),
+  prerequisites: z.array(z.string().min(1)).optional(),
+  date: z.string().min(1),
+  draft: z.boolean().optional().default(false),
 });
 
-const workSchema = base.extend({
-  role: z.string().optional(),
-  year: z.number().int().optional(),
-  url: z.url().optional(),
+export const WORK_TYPES = ["client", "research", "internal", "side"] as const;
+export type WorkType = (typeof WORK_TYPES)[number];
+
+// Work is its own shape rather than a base extension: case studies carry a
+// full frontmatter contract and the index filters on `type`. `date` stays
+// for collection ordering.
+const workSchema = z.object({
+  title: z.string().min(1),
+  client: z.string().min(1),
+  year: z.number().int(),
+  role: z.string().min(1),
+  stack: z.array(z.string().min(1)).min(1),
+  type: z.enum(WORK_TYPES),
+  summary: z.string().min(1),
+  cover: z.string().min(1),
+  live_url: z.url().optional(),
+  status: z.enum(["live", "internal", "archived"]),
+  date: z.string().min(1),
+  draft: z.boolean().optional().default(false),
 });
 
 const schemas = {
@@ -54,10 +75,17 @@ function parseEntry<C extends Collection>(
 ): Entry<C> {
   const raw = fs.readFileSync(path.join(dir, file), "utf8");
   const { data, content } = matter(raw);
-  const frontmatter = schemas[collection].parse(data) as Frontmatter<C>;
+  const parsed = schemas[collection].safeParse(data);
+  if (!parsed.success) {
+    // Fail the build with the file and fields named, not a raw Zod dump.
+    const issues = parsed.error.issues
+      .map((issue) => `${issue.path.join(".") || "frontmatter"}: ${issue.message}`)
+      .join("; ");
+    throw new Error(`Invalid frontmatter in ${collection}/${file}: ${issues}`);
+  }
   return {
     slug: file.replace(/\.mdx?$/, ""),
-    frontmatter,
+    frontmatter: parsed.data as Frontmatter<C>,
     content,
   };
 }
@@ -93,9 +121,19 @@ export function getBySlug<C extends Collection>(
   return null;
 }
 
+/** Reading time at 200 words per minute, floored at one minute. */
+export function readingMinutes(content: string): number {
+  return Math.max(1, Math.round(content.trim().split(/\s+/).length / 200));
+}
+
 const nowSchema = z.object({
-  title: z.string().min(1),
+  title: z.string().min(1).default("Now"),
   updated: z.string().min(1),
+  focus: z.string().min(1),
+  reading: z.string().min(1),
+  listening: z.string().min(1).optional(),
+  not_doing: z.string().min(1).optional(),
+  thinking: z.array(z.string().min(1)).optional(),
 });
 
 export type Now = {
