@@ -1,26 +1,36 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ErrorScreen from "@/components/ErrorScreen";
 
 export const metadata: Metadata = {
   title: "404",
   description: "No such page.",
 };
 
+const ghostLinkDark =
+  "border border-rule-dark px-5 py-3 font-mono text-label uppercase text-page transition-colors duration-200 hover:border-page/70 focus-visible:outline-page";
+
 export default function NotFound() {
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center bg-page px-6 text-center">
-      <p className="font-mono text-label uppercase text-muted">404</p>
-      <h1 className="mt-4 font-serif text-h1">No such page.</h1>
-      <p className="mt-5 max-w-prose text-body text-muted">
+    <ErrorScreen code="Error 404" title="No such page.">
+      <p
+        className="hero-rise mt-6 max-w-prose text-body text-page/70"
+        style={{ animationDelay: "200ms" }}
+      >
         The page moved, or it never existed. The command palette knows
         everything that does: press Cmd K.
       </p>
-      <Link
-        href="/"
-        className="mt-10 border border-rule px-5 py-3 font-mono text-label uppercase text-ink transition-colors duration-200 hover:border-ink"
+      <div
+        className="hero-rise mt-10 flex flex-wrap justify-center gap-4"
+        style={{ animationDelay: "280ms" }}
       >
-        Back home
-      </Link>
-    </main>
+        <Link href="/" className={ghostLinkDark}>
+          Back home
+        </Link>
+        <Link href="/writing" className={ghostLinkDark}>
+          Read writing
+        </Link>
+      </div>
+    </ErrorScreen>
   );
 }

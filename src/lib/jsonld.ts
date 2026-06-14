@@ -12,10 +12,18 @@ export const personJsonLd = {
     "@type": "CollegeOrUniversity",
     name: "Pan-Atlantic University",
   },
-  worksFor: {
-    "@type": "Organization",
-    name: "Plural Health",
-  },
+  worksFor: [
+    {
+      "@type": "Organization",
+      name: "Plural Health",
+    },
+    {
+      "@type": "Organization",
+      name: "Greyform",
+      url: "https://www.greyform.org",
+      description: "Web design and development studio based in Lagos.",
+    },
+  ],
   sameAs: [
     "https://github.com/ochudi",
     "https://www.linkedin.com/in/ochudi",

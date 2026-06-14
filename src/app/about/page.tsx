@@ -74,10 +74,18 @@ export default function AboutPage() {
         <section>
           <h2 className="font-serif text-h2">Greyform</h2>
           <p className="mt-5 text-body">
-            Greyform is my one-person studio. It built this site,
-            ipheclan.com, and the Whitesands School reset. It exists because
-            some projects deserve more care than a side project gets and
-            less ceremony than an agency brings.
+            <a
+              href="https://www.greyform.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4"
+            >
+              Greyform
+            </a>{" "}
+            is my studio. It built this site, ipheclan.com, and the
+            Whitesands School reset. It exists because some projects deserve
+            more care than a side project gets and less ceremony than an
+            agency brings.
           </p>
         </section>
 

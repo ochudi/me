@@ -346,7 +346,7 @@ export default function Home() {
             <ul className="mt-4 flex flex-col gap-2 text-page/70">
               <li>
                 <a
-                  href="https://greyform.org"
+                  href="https://www.greyform.org"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-page"

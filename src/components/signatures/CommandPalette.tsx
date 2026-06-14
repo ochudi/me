@@ -23,6 +23,7 @@ const SOURCE_URL = "https://github.com/ochudi/ochudi.com";
 const GITHUB_URL = "https://github.com/ochudi";
 const LINKEDIN_URL = "https://www.linkedin.com/in/ochudi";
 const X_URL = "https://x.com/ochudi";
+const GREYFORM_URL = "https://www.greyform.org";
 
 // Exact-match easter eggs on the raw input. They never appear as items, so
 // they surface through the empty state, which they reach naturally because
@@ -31,8 +32,20 @@ const EGGS: Record<string, string> = {
   "sudo make me a sandwich": "Okay.",
   vim: "Escape works here. :wq",
   "rust vs python": "Rust for the hot path, Python for everything else.",
-  "opus dei": "Wrong Opus. The one around here writes code.",
 };
+
+// Typing any of these reveals a single secret command that opens the Opus Dei
+// page. Exact match on the trimmed input, matching the spirit of the eggs
+// above, so it stays hidden until someone goes looking for it.
+const OPUS_TRIGGERS = new Set([
+  "opus dei",
+  "opusdei",
+  "vocation",
+  "pray",
+  "prayer",
+  "prayed up",
+  "stay prayed up",
+]);
 
 function readHistory(): string[] {
   if (typeof window === "undefined") return [];
@@ -87,7 +100,9 @@ export default function CommandPalette({ items }: { items: PaletteItems }) {
   const flashTimer = useRef<number | null>(null);
 
   const page = pages[pages.length - 1];
-  const egg = page === undefined ? EGGS[search.trim().toLowerCase()] : undefined;
+  const normalized = search.trim().toLowerCase();
+  const egg = page === undefined ? EGGS[normalized] : undefined;
+  const showOpusEgg = page === undefined && OPUS_TRIGGERS.has(normalized);
 
   useEffect(() => {
     setHistory(readHistory());
@@ -347,6 +362,20 @@ export default function CommandPalette({ items }: { items: PaletteItems }) {
                     </Command.Empty>
                   )}
 
+                  {showOpusEgg && (
+                    <Command.Group heading="✦">
+                      <Command.Item
+                        className={ITEM_CLASS}
+                        value="egg-opus-dei"
+                        keywords={[...OPUS_TRIGGERS, "faith", "god", "opus"]}
+                        onSelect={() => go("Opus Dei", "/opus-dei")}
+                      >
+                        A quiet corner
+                        <span className="text-page/60">Pray</span>
+                      </Command.Item>
+                    </Command.Group>
+                  )}
+
                   {page === undefined && (
                     <>
                       <Command.Group heading="Navigate">
@@ -515,6 +544,15 @@ export default function CommandPalette({ items }: { items: PaletteItems }) {
                         onSelect={() => openExternal("X", X_URL)}
                       >
                         X
+                      </Command.Item>
+                      <Command.Item
+                        className={ITEM_CLASS}
+                        value="contact-greyform"
+                        keywords={["greyform", "studio", "agency", "hire"]}
+                        onSelect={() => openExternal("Greyform", GREYFORM_URL)}
+                      >
+                        Greyform
+                        <span className="text-page/60">Studio</span>
                       </Command.Item>
                     </Command.Group>
                   )}
