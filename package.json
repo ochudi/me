@@ -8,10 +8,15 @@
     "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "seed": "node --env-file=.env.local scripts/seed.mjs",
+    "admin:password": "node --env-file=.env.local scripts/set-admin-password.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.106.2",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "clsx": "^2.1.1",

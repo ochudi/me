@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 // Mirrors WORK_TYPES in lib/content.ts; not imported because that module
 // reads the filesystem and cannot enter a client bundle.
@@ -14,6 +15,7 @@ export type WorkIndexEntry = {
   summary: string;
   stack: string[];
   type: WorkType;
+  cover?: string;
 };
 
 const FILTERS: Array<{ key: WorkType | "all"; label: string }> = [
@@ -61,12 +63,22 @@ export default function WorkIndex({ entries }: { entries: WorkIndexEntry[] }) {
             className="grid gap-8 border-t border-rule py-12 md:py-16 lg:grid-cols-2 lg:items-center lg:gap-16"
           >
             <div
-              aria-hidden
+              aria-hidden={!entry.cover}
               data-cover
-              className={`aspect-[16/10] w-full border border-rule bg-rule/40 ${
+              className={`relative aspect-[16/10] w-full overflow-hidden border border-rule bg-rule/40 ${
                 i % 2 === 1 ? "lg:order-2" : ""
               }`}
-            />
+            >
+              {entry.cover && (
+                <Image
+                  src={entry.cover}
+                  alt={`${entry.title} cover`}
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="object-cover"
+                />
+              )}
+            </div>
             <div className="flex min-w-0 flex-col gap-4">
               <p className="font-mono text-label uppercase text-muted">
                 {String(i + 1).padStart(2, "0")} / {entry.year}

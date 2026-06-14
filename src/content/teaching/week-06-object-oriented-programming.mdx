@@ -1,0 +1,143 @@
+---
+title: Object-oriented programming
+week: 6
+summary: Classes and objects, the self parameter, and constructors. Bundling data with the behaviour that acts on it.
+subjects:
+  - Classes
+  - Objects
+  - Methods
+  - Encapsulation
+prerequisites:
+  - Functions
+  - Data types
+date: "2026-04-13"
+---
+
+Procedural programming puts functions at the centre. Object-oriented
+programming puts **objects** at the centre: bundles of data and the methods
+that act on that data, kept together as one unit.
+
+Think of a class as the blueprint of a house, with all the details about
+floors, doors, and windows. The house you build from it is the object. One
+blueprint, many houses, so one class, many objects.
+
+## The main ideas
+
+- **Class** — the blueprint.
+- **Object** — a thing built from the blueprint.
+- **Encapsulation** — keeping data and its methods together.
+- **Inheritance** — a class building on another.
+- **Polymorphism** — the same call behaving correctly for different types.
+
+This week we cover the first three; inheritance and polymorphism come next.
+
+## Classes
+
+A class is created with the `class` keyword. Its variables are called
+attributes and its functions are called methods.
+
+```python
+class Parrot:
+    pass        # an empty class
+```
+
+A parrot object might have `name`, `age`, and `colour` as attributes, and
+`sing` and `dance` as behaviour.
+
+## Objects
+
+An object is an instance of a class. Defining the class only describes the
+shape; no storage is used until you create an object from it.
+
+```python
+class Dog:
+    attr1 = "mammal"      # class attributes
+    attr2 = "dog"
+
+    def fun(self):
+        print("I'm a", self.attr2)
+        print("I'm a", self.attr1)
+
+rodger = Dog()            # instantiate an object
+rodger.fun()              # call a method through the object
+```
+
+## The `self` parameter
+
+`self` is the first parameter of every method and refers to the particular
+object the method was called on. You do not pass it yourself; Python supplies
+it. It is how a method reaches its own object's attributes. It plays the same
+role as `this` in C++ or Java.
+
+```python
+class Check:
+    def __init__(self):
+        print("Address of self =", id(self))
+
+obj = Check()
+print("Address of object =", id(obj))   # the same address
+```
+
+`self` is a convention, not a keyword, but always name it `self` so others can
+read your code.
+
+## Constructors: the `__init__` method
+
+`__init__` runs automatically the moment an object is created. It is where you
+initialise the object's state, the same idea as a constructor in C++ or Java.
+
+A **default constructor** takes no extra arguments:
+
+```python
+class Program:
+    def __init__(self):
+        self.course = "COS 102 - Introduction to Problem Solving"
+
+    def show(self):
+        print(self.course)
+
+Program().show()
+```
+
+A **parameterized constructor** takes values to set up the object:
+
+```python
+class Addition:
+    def __init__(self, first, second):
+        self.first = first
+        self.second = second
+
+    def calculate(self):
+        self.answer = self.first + self.second
+
+    def display(self):
+        print("Sum =", self.answer)
+
+a = int(input("First number: "))
+b = int(input("Second number: "))
+obj = Addition(a, b)
+obj.calculate()
+obj.display()
+```
+
+Each object keeps its own copy of the instance attributes, so two `Person`
+objects can hold different names while sharing the same methods:
+
+```python
+class Person:
+    def __init__(self, name):
+        self.name = name
+
+    def say_hi(self):
+        print("Hello, my name is", self.name)
+
+Person("Mark").say_hi()
+Person("Ugochi").say_hi()
+```
+
+## Exercise
+
+Model something from your own life as a class: a `Student` with a name and a
+list of scores and a method that returns the average, or a `BankAccount` with
+a balance and `deposit`/`withdraw` methods. Create two objects from it and
+show that they keep separate state.

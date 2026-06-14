@@ -9,13 +9,13 @@ import { courseCode } from "@/content/teaching-calendar";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return getAll("teaching").map((entry) => ({ slug: entry.slug }));
+export async function generateStaticParams() {
+  return (await getAll("teaching")).map((entry) => ({ slug: entry.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const entry = getBySlug("teaching", slug);
+  const entry = await getBySlug("teaching", slug);
   if (!entry) return {};
   return {
     title: `Week ${entry.frontmatter.week}: ${entry.frontmatter.title}`,
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function LessonPage({ params }: Props) {
   const { slug } = await params;
-  const entry = getBySlug("teaching", slug);
+  const entry = await getBySlug("teaching", slug);
   if (!entry) notFound();
 
   const fm = entry.frontmatter;

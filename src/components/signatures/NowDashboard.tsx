@@ -14,7 +14,7 @@ const eyebrowClass = "font-mono text-label uppercase text-page/50";
 
 export default async function NowDashboard() {
   const commits = (await fetchRecentCommits()).slice(0, 5);
-  const now = getNow();
+  const now = await getNow();
   const week = teachingWeekFor(new Date());
   const renderedAt = new Date();
 

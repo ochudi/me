@@ -1,0 +1,147 @@
+---
+title: Functions and modularity
+week: 5
+summary: Writing reusable functions, the four kinds of arguments, variable scope, and a first graphical program with Tkinter.
+subjects:
+  - Functions
+  - Scope
+  - Tkinter
+prerequisites:
+  - Flow of control
+date: "2026-04-06"
+---
+
+A function is a named block of reusable code that does one related job.
+Functions are how you keep a program readable: name a group of statements,
+call it from anywhere, and change it in one place when it needs to change.
+
+## Defining a function
+
+```python
+def function_name(parameters):
+    "optional docstring"
+    # body
+    return value        # optional
+```
+
+Rules to keep in mind:
+
+- The block starts with `def`, the name, and parentheses.
+- Parameters go inside the parentheses.
+- The first line may be a docstring describing what the function does.
+- The body is indented under the colon.
+- `return` hands a value back to the caller and exits. A bare `return`, or no
+  `return`, gives back `None`.
+
+```python
+def area_of_rectangle(length, breadth):
+    "Return the area of a rectangle."
+    return length * breadth
+
+print(area_of_rectangle(4, 3))   # 12
+```
+
+## Why functions
+
+- They name a group of statements, which makes code easier to read and debug.
+- They remove repetition: change the logic once, not in ten places.
+- They let you debug a long program in parts, then assemble the parts.
+- A good function is reusable across many programs.
+
+## Kinds of arguments
+
+**Required** arguments are matched by position, in order.
+
+```python
+def greet(name, course):
+    print(f"Hi {name}, welcome to {course}")
+
+greet("Ada", "COS 102")
+```
+
+**Keyword** arguments name the parameter at the call site, so order stops
+mattering.
+
+```python
+greet(course="COS 102", name="Ada")
+```
+
+**Default** arguments supply a value used when the caller omits one.
+
+```python
+def greet(name, course="COS 102"):
+    print(f"Hi {name}, welcome to {course}")
+
+greet("Ada")            # uses the default course
+```
+
+**Variable-length** arguments collect any extra positional arguments into a
+tuple, using `*`.
+
+```python
+def total(*numbers):
+    return sum(numbers)
+
+print(total(2, 4, 6, 8))   # 20
+```
+
+## Scope
+
+Where you declare a variable decides where you can use it.
+
+- **Local** variables are defined inside a function and exist only there.
+- **Global** variables are defined outside any function and are visible
+  throughout the program.
+
+```python
+tax = 0.075                 # global
+
+def price_with_tax(amount):
+    fee = amount * tax      # fee is local; tax is global
+    return amount + fee
+
+print(price_with_tax(1000))
+# print(fee)  # error: fee does not exist out here
+```
+
+## A first GUI with Tkinter
+
+Tkinter is Python's standard library for graphical interfaces, included with
+most installations. A Tkinter program follows the same shape every time:
+
+1. Create the main window with `Tk()`.
+2. Add widgets (labels, buttons, entries).
+3. Lay them out with a geometry manager (`pack`, `grid`, or `place`).
+4. Bind widgets to functions that run on events such as a click.
+5. Start the event loop with `mainloop()`, which waits for input until the
+   window closes.
+
+```python
+import tkinter as tk
+
+def on_click():
+    label.config(text=f"Hello, {entry.get()}")
+
+window = tk.Tk()
+window.title("Greeter")
+
+entry = tk.Entry(window)
+entry.pack()
+
+tk.Button(window, text="Greet", command=on_click).pack()
+label = tk.Label(window, text="")
+label.pack()
+
+window.mainloop()
+```
+
+Common widgets include `Label` (text or images), `Button` (runs a command),
+`Entry` (one line of input), `Text` (multi-line), `Canvas` (drawing), and
+`Frame` (a container).
+
+## Project
+
+Write a Tkinter program that takes a name and a department, checks them
+against a list of employees, and either welcomes the employee and lists their
+department, or says politely that they were not found. Commit your practice
+cells and the project to GitHub.

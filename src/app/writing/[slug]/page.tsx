@@ -8,13 +8,13 @@ import { mdxOptions } from "@/lib/mdx";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return getAll("writing").map((entry) => ({ slug: entry.slug }));
+export async function generateStaticParams() {
+  return (await getAll("writing")).map((entry) => ({ slug: entry.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const entry = getBySlug("writing", slug);
+  const entry = await getBySlug("writing", slug);
   if (!entry) return {};
   return {
     title: entry.frontmatter.title,
@@ -29,9 +29,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /** Up to three essays sharing a tag, most overlap first, then newest. */
-function relatedEssays(current: Entry<"writing">): Entry<"writing">[] {
+async function relatedEssays(current: Entry<"writing">): Promise<Entry<"writing">[]> {
   const tags = new Set(current.frontmatter.tags);
-  return getAll("writing")
+  return (await getAll("writing"))
     .filter((essay) => essay.slug !== current.slug)
     .map((essay) => ({
       essay,
@@ -49,11 +49,11 @@ function relatedEssays(current: Entry<"writing">): Entry<"writing">[] {
 
 export default async function EssayPage({ params }: Props) {
   const { slug } = await params;
-  const entry = getBySlug("writing", slug);
+  const entry = await getBySlug("writing", slug);
   if (!entry) notFound();
 
   const fm = entry.frontmatter;
-  const related = relatedEssays(entry);
+  const related = await relatedEssays(entry);
 
   const jsonLd = {
     "@context": "https://schema.org",

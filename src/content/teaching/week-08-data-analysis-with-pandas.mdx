@@ -1,0 +1,111 @@
+---
+title: Data analysis with Pandas
+week: 8
+summary: "The DataFrame: building one from lists and dictionaries, selecting rows and columns, reading and writing CSV files, and looping over data."
+subjects:
+  - Pandas
+  - DataFrames
+prerequisites:
+  - NumPy
+  - Data types
+date: "2026-04-27"
+---
+
+Pandas is a library for data manipulation and analysis. Its main structure is
+the **DataFrame**: a two-dimensional, size-mutable table with labelled rows
+and columns, made of three parts, the data, the rows, and the columns.
+
+```python
+import pandas as pd     # the usual alias
+```
+
+## Creating a DataFrame
+
+From a list:
+
+```python
+import pandas as pd
+
+info = ["CSC", "102", "is", "the", "best", "course", "ever"]
+df = pd.DataFrame(info)
+df
+```
+
+From a dictionary of lists, where each key becomes a column:
+
+```python
+import pandas as pd
+
+data = {
+    "Name": ["Angela", "Precious", "Luis", "Ade"],
+    "Age": [20, 21, 19, 18],
+}
+df = pd.DataFrame(data)
+df
+```
+
+## Selecting columns and rows
+
+Select columns by passing a list of their names:
+
+```python
+data = {
+    "Name": ["Clem", "Prince", "Edward", "Adele"],
+    "Age": [27, 24, 22, 32],
+    "Address": ["Abuja", "Kano", "Minna", "Lagos"],
+    "Qualification": ["Msc", "MA", "MCA", "Phd"],
+}
+df = pd.DataFrame(data)
+df[["Name", "Qualification", "Address"]]
+```
+
+Select rows by position with `iloc`:
+
+```python
+df.iloc[1]        # the second row
+df.iloc[1, 3]     # second row, fourth column
+```
+
+## Reading and writing files
+
+Read a CSV into a DataFrame, and write one back out:
+
+```python
+import pandas as pd
+
+data = pd.read_csv("employee_records.csv")
+data.head(2)          # first two rows with the header
+
+record = {
+    "name": ["Abel", "Kamsi", "Oyode", "Chinelo"],
+    "degree": ["MBA", "BCA", "M.Tech", "MBA"],
+    "score": [90, 40, 80, 98],
+}
+pd.DataFrame(record).to_csv("record.csv")
+```
+
+## Looping over data
+
+Iterate rows with `iterrows`:
+
+```python
+for index, row in df.iterrows():
+    print(index, row["Name"], row["Age"])
+```
+
+Iterate columns by looping over the list of column names:
+
+```python
+for column in list(df):
+    print(column, df[column][0])   # column name and its first value
+```
+
+## Projects
+
+1. From [kaggle.com](https://www.kaggle.com), download a dataset, then display
+   its first seven rows, its first three columns, and a single row with the
+   header.
+2. Model a company's product catalogue (segments and brands) as a DataFrame
+   and save it to `cadbury_market.csv`.
+
+Commit every practice cell and project to your GitHub repository.

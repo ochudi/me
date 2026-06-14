@@ -20,9 +20,13 @@
     @apply bg-ink text-page;
   }
 
-  /* Visible focus ring on every keyboard-focused interactive element. */
+  /* Visible focus ring on every keyboard-focused interactive element.
+     currentColor (not a fixed ink) so the ring stays visible on dark
+     sections too: it inherits the element's text colour, which is light on
+     ink backgrounds and dark on the page. */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-ink;
+    @apply outline-2 outline-offset-2;
+    outline-color: currentColor;
   }
 }
 

@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description: "Essays on clustering, engineering, and teaching.",
 };
 
-export default function WritingPage() {
-  const essays = getAll("writing");
+export default async function WritingPage() {
+  const essays = await getAll("writing");
   const [lead, ...rest] = essays;
 
   return (

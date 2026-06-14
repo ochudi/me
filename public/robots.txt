@@ -1,6 +1,8 @@
 # *
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /auth
 
 # Host
 Host: https://ochudi.com

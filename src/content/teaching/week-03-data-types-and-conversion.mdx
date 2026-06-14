@@ -1,0 +1,81 @@
+---
+title: Data types and type conversion
+week: 3
+summary: The built-in Python types in detail, and how to convert between them when the data you have is not the data you need.
+subjects:
+  - Data types
+  - Type conversion
+prerequisites:
+  - Python
+  - Variables
+date: "2026-03-23"
+---
+
+A variable's type decides what you can do with the value inside it. This week
+we go through the built-in types and how to move between them.
+
+## The built-in types
+
+| Group | Types |
+| --- | --- |
+| Numeric | `int`, `float`, `complex` |
+| String | `str` |
+| Sequence | `list`, `tuple`, `range` |
+| Mapping | `dict` |
+| Boolean | `bool` |
+| Set | `set`, `frozenset` |
+
+```python
+text = "CSC 102"          # str
+count = 102               # int
+price = 2.33              # float
+scores = [90, 40, 80]     # list  (mutable)
+point = (3, 4)            # tuple (immutable)
+grades = {"CSC": 89}      # dict
+passed = True             # bool
+```
+
+## Numbers, strings, lists, tuples, booleans
+
+- A **string** is text in quotes. You can index and slice it.
+- A **number** is an `int` or a `float`; mixing them in arithmetic gives a
+  `float`.
+- A **list** holds an ordered, changeable collection: `["a", "b", "c"]`.
+- A **tuple** is like a list but cannot be changed once made: `(1, 2)`.
+- A **boolean** is `True` or `False`, which is what conditions evaluate to.
+
+## Type conversion
+
+Sometimes the data you have is not the type you need. The classic case: input
+from a user always arrives as a string, so `"5" + "3"` is `"53"`, not `8`. To
+convert, call the type's name as a function.
+
+```python
+# string to number
+age = int("19")        # 19
+gpa = float("4.33")    # 4.33
+
+# number to string
+label = str(102)       # "102"
+
+# between collections
+letters = list("abc")  # ['a', 'b', 'c']
+unique = set([1, 1, 2])  # {1, 2}
+```
+
+A common bug, and its fix:
+
+```python
+n = input("Enter a number: ")   # n is a string, e.g. "5"
+total = int(n) + 10             # convert before doing maths
+print(total)
+```
+
+## Practice
+
+In a `Week_3` notebook:
+
+1. Create one value of each built-in type and print its `type(...)`.
+2. Ask the user for two numbers with `input`, convert them, and print the
+   sum, difference, and product.
+3. Turn the string `"112358"` into a list of its digits as integers.

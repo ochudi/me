@@ -72,7 +72,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -81,10 +81,15 @@ export default function RootLayout({
     title: e.frontmatter.title,
     slug: e.slug,
   });
+  const [work, writing, teaching] = await Promise.all([
+    getAll("work"),
+    getAll("writing"),
+    getAll("teaching"),
+  ]);
   const paletteItems = {
-    work: getAll("work").map(toEntry),
-    writing: getAll("writing").map(toEntry),
-    teaching: getAll("teaching").map(toEntry),
+    work: work.map(toEntry),
+    writing: writing.map(toEntry),
+    teaching: teaching.map(toEntry),
   };
 
   return (

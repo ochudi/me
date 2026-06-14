@@ -1,0 +1,108 @@
+---
+title: Introduction to Python
+week: 2
+summary: "Why Python, getting set up with Anaconda and Jupyter, good habits, and the first building blocks: variables, data types, and keywords."
+subjects:
+  - Python
+  - Variables
+  - Data types
+prerequisites:
+  - Problem solving foundations
+date: "2026-03-16"
+---
+
+Last week was about thinking through a problem before touching code. This
+week we pick up the tool we will use for the rest of the course.
+
+## Why Python
+
+Python is a general-purpose, interpreted, interactive, object-oriented,
+high-level language. It is dynamically typed and garbage-collected, created
+by Guido van Rossum between 1985 and 1990. It supports several styles of
+programming (procedural, object-oriented, functional), and its design leans
+hard on readability through meaningful indentation.
+
+That readability is why we start here. You can run programs without
+compiling them first, sit at a prompt and try ideas line by line, and read
+your own code back a week later and still understand it.
+
+People reach for Python across scripting, data analysis, machine learning,
+web development, and game development, which is why Google, NASA, Netflix,
+Amazon, and many others use it.
+
+## Getting set up
+
+We use the **Anaconda** distribution, which bundles Python with the
+scientific libraries and tools we need, and **Jupyter Notebook**, where you
+write and run code one cell at a time.
+
+- Windows: [docs.anaconda.com/anaconda/install/windows](https://docs.anaconda.com/anaconda/install/windows/)
+- macOS: [docs.anaconda.com/anaconda/install/mac-os](https://docs.anaconda.com/anaconda/install/mac-os/)
+
+In a Jupyter cell, type your code and press **Shift + Enter** to run it.
+
+## Habits worth forming now
+
+- **Comment and document** what is not obvious.
+- **Indent consistently.** In Python indentation is not decoration; it is
+  how the language groups code.
+- **Avoid deep nesting.** If you are five levels in, rethink the structure.
+- **Do not repeat yourself (DRY).** The same logic should live in one place.
+- **Organise files and folders.** Do not put everything in one file; a clean
+  structure is easier to read, debug, and maintain.
+
+## Variables
+
+A variable is a name (an identifier) that refers to a value. The rules:
+
+- A name starts with a letter or an underscore: `str`, `_num`, `num` are all
+  valid.
+- A name cannot start with a number: `9num` is invalid.
+- Only letters, digits, and underscores are allowed, no `%`, `$`, `#`.
+- Names are case sensitive: `num` and `NUM` are two different variables.
+
+```python
+name = "Ada"        # a string
+age = 19            # an integer
+gpa = 4.33          # a float
+print(name, age, gpa)
+```
+
+## Data types
+
+A data type is the kind of value a variable holds. `123` is an integer,
+`"hello"` is a string, `2.33` is a float. Python splits types into two
+groups:
+
+- **Immutable** (cannot be changed in place): numbers, strings, tuples.
+- **Mutable** (can be changed in place): lists, dictionaries, sets.
+
+That distinction matters later when you pass values around and wonder why one
+changed and another did not.
+
+## Keywords
+
+Keywords are reserved words with special meaning, so you cannot use them as
+variable names. Naming a variable `while` causes an error, because `while`
+already means a loop. Python 3 has 33 of them, including:
+
+```text
+False  None  True  and  as  assert  break  class  continue  def  del
+elif  else  except  finally  for  from  global  if  import  in  is
+lambda  nonlocal  not  or  pass  raise  return  try  while  with  yield
+```
+
+## Lab
+
+Create a GitHub repository for your work this semester and clone it. Make a
+`Week_2` folder and keep your notebooks there. Commit and push as you go:
+
+```bash
+git clone YOUR-REPO-URL
+git add .
+git commit -m "Week 2 practice"
+git push
+```
+
+Then, in a notebook, declare one variable of each basic type, print them, and
+print their types with `type(...)`.

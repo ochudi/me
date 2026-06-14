@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   description: "Open lesson notes for Problem Solving at Pan-Atlantic University.",
 };
 
-export default function TeachingPage() {
-  const lessons = getAll("teaching").sort(
+export default async function TeachingPage() {
+  const lessons = (await getAll("teaching")).sort(
     (a, b) => a.frontmatter.week - b.frontmatter.week,
   );
 

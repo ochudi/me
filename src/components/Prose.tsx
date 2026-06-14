@@ -17,7 +17,12 @@ export default function Prose({ children }: { children: React.ReactNode }) {
         [&_pre]:overflow-x-auto
         [&_a]:underline [&_a]:underline-offset-4
         [&_hr]:mt-12 [&_hr]:border-rule
-        [&_em]:font-serif [&_em]:italic"
+        [&_em]:font-serif [&_em]:italic
+        [&_table]:mt-6 [&_table]:w-full [&_table]:table-auto [&_table]:border-collapse [&_table]:text-body
+        [&_thead]:border-b [&_thead]:border-ink
+        [&_th]:whitespace-nowrap [&_th]:py-3 [&_th]:pr-8 [&_th]:text-left [&_th]:align-top [&_th]:font-mono [&_th]:text-label [&_th]:font-normal [&_th]:uppercase [&_th]:tracking-[0.04em] [&_th]:text-muted [&_th]:last:pr-0
+        [&_tbody_tr]:border-b [&_tbody_tr]:border-rule
+        [&_td]:py-3 [&_td]:pr-8 [&_td]:align-top [&_td]:last:pr-0"
     >
       {children}
     </div>

@@ -11,13 +11,13 @@ import { mdxOptions } from "@/lib/mdx";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return getAll("work").map((entry) => ({ slug: entry.slug }));
+export async function generateStaticParams() {
+  return (await getAll("work")).map((entry) => ({ slug: entry.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const entry = getBySlug("work", slug);
+  const entry = await getBySlug("work", slug);
   if (!entry) return {};
   return {
     title: entry.frontmatter.title,
@@ -27,19 +27,43 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function WorkCasePage({ params }: Props) {
   const { slug } = await params;
-  const entry = getBySlug("work", slug);
+  const entry = await getBySlug("work", slug);
   if (!entry) notFound();
 
   const fm = entry.frontmatter;
-  const all = getAll("work");
+  const all = await getAll("work");
   const index = all.findIndex((e) => e.slug === slug);
   const next = all[(index + 1) % all.length];
-  const coverExists = fs.existsSync(
-    path.join(process.cwd(), "public", fm.cover),
-  );
+  // Cover can be a remote Supabase URL or a local file in /public.
+  const isRemoteCover = /^https?:\/\//.test(fm.cover);
+  const hasCover =
+    fm.cover.length > 0 &&
+    fm.cover !== "placeholder" &&
+    (isRemoteCover ||
+      fs.existsSync(path.join(process.cwd(), "public", fm.cover)));
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: fm.title,
+    abstract: fm.summary,
+    dateCreated: fm.date,
+    url: `https://ochudi.com/work/${entry.slug}`,
+    creator: {
+      "@type": "Person",
+      name: "Chukwudi Ofoma",
+      url: "https://ochudi.com",
+    },
+    keywords: fm.stack.join(", "),
+    ...(fm.live_url ? { sameAs: fm.live_url } : {}),
+  };
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-6xl px-6 pt-20 md:pt-32">
         <p className="font-mono text-label uppercase text-muted">
           Case study / {fm.client} / {fm.year}
@@ -50,7 +74,7 @@ export default async function WorkCasePage({ params }: Props) {
 
       {/* Full-bleed cover, placeholder block until real artwork lands. */}
       <div className="mt-12 md:mt-16">
-        {coverExists ? (
+        {hasCover ? (
           <div className="relative aspect-[16/10] w-full md:aspect-[2/1]">
             <Image
               src={fm.cover}

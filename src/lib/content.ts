@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { z } from "zod";
+import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { supabaseConfigured, TABLE } from "@/lib/supabase/env";
 
 const CONTENT_DIR = path.join(process.cwd(), "src", "content");
 
@@ -64,11 +66,14 @@ export type Entry<C extends Collection> = {
   content: string;
 };
 
-function collectionDir(collection: Collection): string {
-  return path.join(CONTENT_DIR, collection);
-}
-
-function parseEntry<C extends Collection>(
+// ---------------------------------------------------------------------------
+// File-based source (fallback + seed origin)
+//
+// The original MDX files stay in the repo. They are the seed source and the
+// safety net: if Supabase is not configured, or a query fails, the site reads
+// these exactly as before, so it can never go blank from a database problem.
+// ---------------------------------------------------------------------------
+function parseFile<C extends Collection>(
   collection: C,
   dir: string,
   file: string,
@@ -77,9 +82,8 @@ function parseEntry<C extends Collection>(
   const { data, content } = matter(raw);
   const parsed = schemas[collection].safeParse(data);
   if (!parsed.success) {
-    // Fail the build with the file and fields named, not a raw Zod dump.
     const issues = parsed.error.issues
-      .map((issue) => `${issue.path.join(".") || "frontmatter"}: ${issue.message}`)
+      .map((i) => `${i.path.join(".") || "frontmatter"}: ${i.message}`)
       .join("; ");
     throw new Error(`Invalid frontmatter in ${collection}/${file}: ${issues}`);
   }
@@ -90,15 +94,13 @@ function parseEntry<C extends Collection>(
   };
 }
 
-/** All entries in a collection, newest first, drafts hidden in production. */
-export function getAll<C extends Collection>(collection: C): Entry<C>[] {
-  const dir = collectionDir(collection);
+function getAllFromFiles<C extends Collection>(collection: C): Entry<C>[] {
+  const dir = path.join(CONTENT_DIR, collection);
   if (!fs.existsSync(dir)) return [];
-
   return fs
     .readdirSync(dir)
     .filter((file) => /\.mdx?$/.test(file))
-    .map((file) => parseEntry(collection, dir, file))
+    .map((file) => parseFile(collection, dir, file))
     .filter(
       (entry) =>
         process.env.NODE_ENV !== "production" || !entry.frontmatter.draft,
@@ -106,19 +108,123 @@ export function getAll<C extends Collection>(collection: C): Entry<C>[] {
     .sort((a, b) => (a.frontmatter.date < b.frontmatter.date ? 1 : -1));
 }
 
-/** A single entry by slug, or null if no matching .md/.mdx file exists. */
-export function getBySlug<C extends Collection>(
+function getBySlugFromFiles<C extends Collection>(
   collection: C,
   slug: string,
 ): Entry<C> | null {
-  const dir = collectionDir(collection);
+  const dir = path.join(CONTENT_DIR, collection);
   for (const ext of [".md", ".mdx"]) {
     const file = `${slug}${ext}`;
     if (fs.existsSync(path.join(dir, file))) {
-      return parseEntry(collection, dir, file);
+      return parseFile(collection, dir, file);
     }
   }
   return null;
+}
+
+// ---------------------------------------------------------------------------
+// Supabase source (primary when configured)
+// ---------------------------------------------------------------------------
+
+/** Turn a DB row into the same {slug, frontmatter, content} shape as a file. */
+function rowToEntry<C extends Collection>(
+  collection: C,
+  row: Record<string, unknown>,
+): Entry<C> | null {
+  const date =
+    typeof row.date === "string" ? row.date.slice(0, 10) : String(row.date ?? "");
+  const draft = row.published === false;
+
+  let candidate: Record<string, unknown>;
+  if (collection === "work") {
+    candidate = {
+      title: row.title,
+      client: row.client,
+      year: row.year,
+      role: row.role,
+      stack: row.stack ?? [],
+      type: row.type,
+      summary: row.summary,
+      cover: row.cover || "placeholder",
+      live_url: row.live_url ?? undefined,
+      status: row.status,
+      date,
+      draft,
+    };
+  } else if (collection === "teaching") {
+    candidate = {
+      title: row.title,
+      week: row.week,
+      summary: row.summary,
+      subjects: row.subjects ?? [],
+      prerequisites: row.prerequisites ?? undefined,
+      date,
+      draft,
+    };
+  } else {
+    candidate = {
+      title: row.title,
+      description: row.description,
+      date,
+      tags: row.tags ?? [],
+      draft,
+    };
+  }
+
+  const parsed = schemas[collection].safeParse(candidate);
+  if (!parsed.success) return null; // skip malformed rows rather than crash
+  return {
+    slug: String(row.slug),
+    frontmatter: parsed.data as Frontmatter<C>,
+    content: typeof row.body === "string" ? row.body : "",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Public API (async): Supabase first, files as fallback
+// ---------------------------------------------------------------------------
+
+/** All published entries in a collection, newest first. */
+export async function getAll<C extends Collection>(
+  collection: C,
+): Promise<Entry<C>[]> {
+  if (!supabaseConfigured) return getAllFromFiles(collection);
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data, error } = await supabase
+      .from(TABLE[collection])
+      .select("*")
+      .eq("published", true)
+      .order("date", { ascending: false });
+    if (error || !data) return getAllFromFiles(collection);
+    return data
+      .map((row) => rowToEntry(collection, row as Record<string, unknown>))
+      .filter((e): e is Entry<C> => e !== null);
+  } catch {
+    return getAllFromFiles(collection);
+  }
+}
+
+/** A single published entry by slug, or null. */
+export async function getBySlug<C extends Collection>(
+  collection: C,
+  slug: string,
+): Promise<Entry<C> | null> {
+  if (!supabaseConfigured) return getBySlugFromFiles(collection, slug);
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data, error } = await supabase
+      .from(TABLE[collection])
+      .select("*")
+      .eq("slug", slug)
+      .eq("published", true)
+      .maybeSingle();
+    if (error) return getBySlugFromFiles(collection, slug);
+    if (!data) return null;
+    return rowToEntry(collection, data as Record<string, unknown>);
+  } catch {
+    return getBySlugFromFiles(collection, slug);
+  }
 }
 
 /** Reading time at 200 words per minute, floored at one minute. */
@@ -141,10 +247,45 @@ export type Now = {
   content: string;
 };
 
-/** The single /now page, or null if src/content/now.md is absent. */
-export function getNow(): Now | null {
+function getNowFromFile(): Now | null {
   const file = path.join(CONTENT_DIR, "now.md");
   if (!fs.existsSync(file)) return null;
   const { data, content } = matter(fs.readFileSync(file, "utf8"));
-  return { frontmatter: nowSchema.parse(data), content };
+  const parsed = nowSchema.safeParse(data);
+  if (!parsed.success) return null;
+  return { frontmatter: parsed.data, content };
+}
+
+/** The single /now page, from Supabase or the now.md fallback. */
+export async function getNow(): Promise<Now | null> {
+  if (!supabaseConfigured) return getNowFromFile();
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data, error } = await supabase
+      .from(TABLE.now)
+      .select("*")
+      .eq("published", true)
+      .maybeSingle();
+    if (error || !data) return getNowFromFile();
+    const row = data as Record<string, unknown>;
+    const parsed = nowSchema.safeParse({
+      title: row.title,
+      updated:
+        typeof row.updated === "string"
+          ? row.updated.slice(0, 10)
+          : String(row.updated ?? ""),
+      focus: row.focus,
+      reading: row.reading,
+      listening: row.listening ?? undefined,
+      not_doing: row.not_doing ?? undefined,
+      thinking: row.thinking ?? undefined,
+    });
+    if (!parsed.success) return getNowFromFile();
+    return {
+      frontmatter: parsed.data,
+      content: typeof row.body === "string" ? row.body : "",
+    };
+  } catch {
+    return getNowFromFile();
+  }
 }

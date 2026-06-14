@@ -1,0 +1,129 @@
+---
+title: Flow of control
+week: 4
+summary: The order statements run in, and how to bend it with sequence, selection, and repetition. Loops, break, continue, and nesting.
+subjects:
+  - Selection
+  - Iteration
+  - Loops
+prerequisites:
+  - Data types
+  - Problem solving foundations
+date: "2026-03-30"
+---
+
+The flow of control is the order in which statements run. By default that is
+top to bottom, but real programs need to make decisions and repeat work. Three
+structures cover everything: sequence, selection, and repetition.
+
+## Sequence
+
+Statements run one after another, in order.
+
+```text
+INPUT length
+INPUT breadth
+COMPUTE area = length * breadth
+PRINT area
+```
+
+```python
+length = float(input("Length: "))
+breadth = float(input("Breadth: "))
+area = length * breadth
+print("Area:", area)
+```
+
+## Selection
+
+Selection checks a condition and runs different code depending on whether it
+is true or false. The indented block under an `if` runs only when the
+condition holds.
+
+```text
+INPUT number
+IF number MOD 2 == 0 THEN
+    PRINT "Even"
+ELSE
+    PRINT "Odd"
+```
+
+```python
+number = int(input("Enter a number: "))
+if number % 2 == 0:
+    print("Even")
+else:
+    print("Odd")
+```
+
+You can chain conditions with `elif`, and there is no limit on how many
+statements sit inside a block.
+
+## Repetition
+
+Repetition, also called iteration or looping, runs statements again and again
+until a condition is met. Python has two loops.
+
+### The for loop
+
+`for` walks over a sequence (a range, string, list, or tuple), running the
+body once per item.
+
+```python
+for i in range(1, 6):      # 1, 2, 3, 4, 5
+    print(i, i * i)
+```
+
+### The while loop
+
+`while` repeats as long as its condition stays true. The condition is checked
+before each pass, so if it starts false the body never runs.
+
+```python
+total = 0
+n = int(input("Number (negative to stop): "))
+while n >= 0:
+    total += n
+    n = int(input("Number (negative to stop): "))
+print("Sum:", total)
+```
+
+## Changing the flow inside a loop
+
+**`break`** ends the loop immediately and continues after it.
+
+```python
+for n in range(100):
+    if n * n > 50:
+        break          # stop at the first square over 50
+    print(n)
+```
+
+**`continue`** skips the rest of the current pass and jumps to the next one.
+
+```python
+for n in range(7):
+    if n == 3:
+        continue       # print every value except 3
+    print(n)
+```
+
+## Nested loops
+
+A loop inside another loop. The inner loop runs fully for each pass of the
+outer one.
+
+```python
+for row in range(1, 4):
+    for col in range(1, 4):
+        print(f"{row}x{col}={row * col}", end="  ")
+    print()
+```
+
+## Exercises
+
+In a `Week_4` notebook:
+
+1. **Sequence:** read a length and breadth, print area and perimeter.
+2. **Selection:** read a number and report whether it is odd or even.
+3. **Repetition:** calculate the factorial of a number the user enters.

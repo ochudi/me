@@ -11,7 +11,7 @@ export default async function Image({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const entry = getBySlug("writing", slug);
+  const entry = await getBySlug("writing", slug);
   return ogImage({
     title: entry?.frontmatter.title ?? "Writing",
     eyebrow: entry ? `Writing / ${entry.frontmatter.date}` : "Writing",

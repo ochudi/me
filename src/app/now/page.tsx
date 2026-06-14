@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   description: "What I am focused on right now.",
 };
 
-export default function NowPage() {
-  const now = getNow();
+export default async function NowPage() {
+  const now = await getNow();
   const thinking = now?.frontmatter.thinking ?? [];
 
   return (

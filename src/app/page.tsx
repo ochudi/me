@@ -47,8 +47,8 @@ const inlineLink =
 
 const eyebrowLight = "font-mono text-label uppercase text-muted";
 
-export default function Home() {
-  const essays = getAll("writing").slice(0, 2);
+export default async function Home() {
+  const essays = (await getAll("writing")).slice(0, 2);
   const deployed = process.env.NEXT_PUBLIC_BUILD_DATE ?? "unreleased";
 
   return (
@@ -263,9 +263,40 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
+
+      {/* 7. Contact */}
+      <section className="bg-page py-20 md:py-32">
+        <div className="mx-auto max-w-6xl px-6">
+          <Reveal>
+            <p className={eyebrowLight}>Contact</p>
+            <h2 className="mt-3 font-serif text-h2">Available for new work.</h2>
+            <p className="mt-6 max-w-prose text-body text-muted">
+              I take on a small number of projects through Greyform, my studio,
+              and I am open to AI engineering and research roles. If you have
+              something in mind, email is the fastest way to reach me.
+            </p>
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+              <a
+                href={`mailto:${EMAIL}`}
+                className="inline-flex items-center justify-center border border-ink bg-ink px-5 py-3 font-mono text-label uppercase text-page transition-colors duration-200 hover:bg-page hover:text-ink"
+              >
+                Email me
+              </a>
+              <a
+                href="https://www.greyform.org/start"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center border border-rule px-5 py-3 font-mono text-label uppercase text-ink transition-colors duration-200 hover:border-ink"
+              >
+                Work with Greyform
+              </a>
+            </div>
+          </Reveal>
+        </div>
+      </section>
       </main>
 
-      {/* 7. Footer */}
+      {/* 8. Footer */}
       <footer className="border-t border-rule-dark bg-ink py-16 text-page">
         <div className="mx-auto max-w-6xl px-6 pb-12">
           <Logo variant="lockup" size={28} animate />

@@ -1,0 +1,119 @@
+---
+title: Arrays with NumPy
+week: 7
+summary: "Working with fast numerical arrays: creating ndarrays, dimensions, indexing and slicing, iterating, and joining and splitting."
+subjects:
+  - NumPy
+  - Arrays
+prerequisites:
+  - Data types
+  - Flow of control
+date: "2026-04-20"
+---
+
+NumPy is a Python library for working with arrays, with functions for linear
+algebra, Fourier transforms, and matrices. It was created in 2005 by Travis
+Oliphant and is open source.
+
+## Why NumPy
+
+Python lists can act like arrays, but they are slow for numeric work. NumPy's
+array object, the **ndarray**, is up to 50 times faster and comes with a large
+set of helper functions.
+
+```python
+import numpy as np      # the usual alias
+
+print(np.__version__)
+```
+
+## Creating an ndarray
+
+Pass a list, tuple, or other array-like object to `np.array`.
+
+```python
+import numpy as np
+
+arr = np.array([101, 201, 301, 401, 501])
+print(arr)
+print(type(arr))        # class 'numpy.ndarray'
+```
+
+## Dimensions
+
+A dimension is one level of array depth.
+
+```python
+import numpy as np
+
+a = np.array(42)                       # 0-D, a scalar
+b = np.array([1, 2, 3, 4, 5])          # 1-D
+c = np.array([[1, 2, 3], [4, 5, 6]])   # 2-D, a matrix
+d = np.array([[[1, 2], [3, 4]],
+              [[5, 6], [7, 8]]])       # 3-D
+
+for name, x in {"a": a, "b": b, "c": c, "d": d}.items():
+    print(name, x.ndim)                # 0 1 2 3
+```
+
+`ndim` reports the number of dimensions; `shape` reports the size along each.
+
+## Indexing and slicing
+
+Index from `0`, or from the end with negative numbers. For multiple
+dimensions, separate indices with commas.
+
+```python
+import numpy as np
+
+arr = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+print(arr[1, 3])        # 9
+print(arr[0, -1])       # 5, last of the first row
+```
+
+Slicing takes a range with `[start:end]`, optionally `[start:end:step]`.
+Missing `start` means 0, missing `end` means the end, missing `step` means 1.
+
+```python
+import numpy as np
+
+arr = np.array([1, 2, 3, 4, 5, 6, 7])
+print(arr[1:5])         # [2 3 4 5]
+print(arr[4:])          # [5 6 7]
+print(arr[:4])          # [1 2 3 4]
+```
+
+## Iterating
+
+Loop over an array with `for`. For multi-dimensional arrays, nest the loops to
+reach scalars.
+
+```python
+import numpy as np
+
+arr = np.array([[1, 2, 3], [4, 5, 6]])
+for row in arr:
+    for value in row:
+        print(value)
+```
+
+## Joining and splitting
+
+`concatenate` merges arrays; `array_split` breaks one apart.
+
+```python
+import numpy as np
+
+arr1 = np.array([1, 2, 3])
+arr2 = np.array([4, 5, 6])
+joined = np.concatenate((arr1, arr2))   # [1 2 3 4 5 6]
+
+parts = np.array_split(joined, 3)        # three sub-arrays
+print(parts[1])                          # [3 4]
+```
+
+## Practice
+
+In a `Week_7` notebook: build a 2-D array of five students' scores across
+three subjects, print its `shape`, the second student's scores, the highest
+score in the array, and the array split into individual rows.
