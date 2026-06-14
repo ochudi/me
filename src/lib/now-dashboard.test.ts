@@ -194,7 +194,7 @@ describe("teachingWeekFor", () => {
   it("puts 2026-06-10 in week 14", () => {
     const result = teachingWeekFor(new Date("2026-06-10T09:00:00Z"));
     expect(result?.week).toBe(14);
-    expect(result?.topic).toBe("Revision");
+    expect(result?.topic).toBe("Examinations");
   });
 
   it("ends after the final week", () => {

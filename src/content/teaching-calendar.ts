@@ -5,21 +5,23 @@ export const semesterStart = "2026-03-09";
 export const weekCount = 15;
 export const courseCode = "COS 102";
 
+// Weeks 1-8 mirror the published lesson notes; 9-15 carry the rest of the
+// semester through to exams.
 const topics: string[] = [
   "Problem solving foundations",
-  "Algorithms and flowcharts",
-  "Pseudocode",
-  "Object-oriented programming",
-  "Selection",
-  "Iteration",
+  "Introduction to Python",
+  "Data types and conversion",
+  "Flow of control",
   "Functions and modularity",
-  "Mid-semester test",
-  "Lists and arrays",
-  "Strings",
-  "File handling",
-  "Debugging and testing",
+  "Object-oriented programming",
+  "Arrays with NumPy",
+  "Data analysis with Pandas",
+  "Continuous assessment",
+  "Files and exceptions",
+  "Mini project",
   "Group projects",
   "Revision",
+  "Examinations",
   "Examinations",
 ];
 
