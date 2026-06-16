@@ -15,6 +15,10 @@ import {
 // analytics under /_vercel. In development Next's HMR/React Refresh evaluates
 // code with eval(), so 'unsafe-eval' is added there only. style-src keeps
 // 'unsafe-inline' because Shiki and a couple of inline <style> blocks need it.
+// upgrade-insecure-requests is production-only: in development the dev server
+// is plain http://localhost, and Safari honours the directive by upgrading
+// every CSS/JS request to https://localhost (which has no listener), so the
+// page loads as unstyled HTML. Chrome exempts localhost, which masks it.
 const IS_DEV = process.env.NODE_ENV !== "production";
 
 const CSP = [
@@ -28,7 +32,7 @@ const CSP = [
   `base-uri 'self'`,
   `object-src 'none'`,
   `form-action 'self'`,
-  `upgrade-insecure-requests`,
+  ...(IS_DEV ? [] : [`upgrade-insecure-requests`]),
 ].join("; ");
 
 export async function middleware(request: NextRequest) {
