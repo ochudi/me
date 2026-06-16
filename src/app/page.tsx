@@ -10,7 +10,7 @@ import Reveal from "@/components/Reveal";
 import SmoothScroll from "@/components/SmoothScroll";
 import { getAll, getTestimonials, readingMinutes } from "@/lib/content";
 import { renderableCover } from "@/lib/cover";
-import { personJsonLd } from "@/lib/jsonld";
+import { personJsonLd, websiteJsonLd } from "@/lib/jsonld";
 import { courseCode } from "@/content/teaching-calendar";
 import { site } from "@/lib/site";
 
@@ -49,6 +49,10 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
 
       <main>

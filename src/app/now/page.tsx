@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import ActivityStrip, {
   ActivityStripSkeleton,
@@ -8,11 +7,13 @@ import NowDashboard, {
   NowDashboardSkeleton,
 } from "@/components/signatures/NowDashboard";
 import { getNow } from "@/lib/content";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Now",
   description: "What I am focused on right now.",
-};
+  path: "/now",
+});
 
 export default async function NowPage() {
   const now = await getNow();

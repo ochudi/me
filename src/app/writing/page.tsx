@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import { getAll, readingMinutes } from "@/lib/content";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Writing",
   description: "Essays on clustering, engineering, and teaching.",
-};
+  path: "/writing",
+});
 
 export default async function WritingPage() {
   const essays = await getAll("writing");

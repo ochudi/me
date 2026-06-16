@@ -1,14 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import WorkIndex, { type WorkIndexEntry } from "@/components/WorkIndex";
 import { getAll } from "@/lib/content";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Work",
   description: "Selected work: client sites, research, and internal tools.",
-};
+  path: "/work",
+});
 
 // Only hand the index a cover it can actually render: a remote Supabase URL,
 // or a local file that exists. Otherwise the grey placeholder stands in.

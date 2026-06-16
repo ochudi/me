@@ -1,26 +1,10 @@
 [
   {
     "slug": "andrew-eze-whitesands",
-    "quote": "Everyone I've sent the link to has rated the work very high. I don't even like looking at our old website anymore.",
+    "quote": "Everyone I've sent the link to for appraisal has rated the work you did very high. I don't even like looking at that website anymore.",
     "author": "Andrew Eze",
     "company": "Whitesands School",
     "url": "https://whitesands-school.vercel.app",
     "sort_order": 1
-  },
-  {
-    "slug": "iphe-clan",
-    "quote": "Loved it on our review call. I was happy enough to clear the balance before the site even went live.",
-    "author": "Iphe",
-    "company": "Iphe Clan",
-    "url": "https://www.ipheclan.com",
-    "sort_order": 2
-  },
-  {
-    "slug": "neoscribe-plural-health",
-    "quote": "Impressively intuitive. The demo spoke for itself.",
-    "author": "Product lead",
-    "company": "Plural Health",
-    "url": "https://neoscribe.vercel.app",
-    "sort_order": 3
   }
 ]

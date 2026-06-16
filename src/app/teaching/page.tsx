@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import { getAll } from "@/lib/content";
 import { courseCode } from "@/content/teaching-calendar";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Teaching",
   description: "Open lesson notes for Problem Solving at Pan-Atlantic University.",
-};
+  path: "/teaching",
+});
 
 export default async function TeachingPage() {
   const lessons = (await getAll("teaching")).sort(

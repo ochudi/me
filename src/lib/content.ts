@@ -46,7 +46,13 @@ const workSchema = z.object({
   type: z.enum(WORK_TYPES),
   summary: z.string().min(1),
   cover: z.string().min(1),
-  live_url: z.url().optional(),
+  // Coerce a blank live_url (empty frontmatter, a cleared admin field, or an
+  // empty DB column) to undefined so it does not fail URL validation and
+  // invalidate the whole entry.
+  live_url: z.preprocess(
+    (v) => (v === "" || v === null ? undefined : v),
+    z.url().optional(),
+  ),
   status: z.enum(["live", "internal", "archived"]),
   date: z.string().min(1),
   draft: z.boolean().optional().default(false),

@@ -5,6 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import Prose from "@/components/Prose";
 import { getAll, getBySlug, readingMinutes, type Entry } from "@/lib/content";
 import { mdxOptions } from "@/lib/mdx";
+import { buildMetadata } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -16,16 +17,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const entry = await getBySlug("writing", slug);
   if (!entry) return {};
-  return {
+  return buildMetadata({
     title: entry.frontmatter.title,
     description: entry.frontmatter.description,
-    openGraph: {
-      type: "article",
-      title: entry.frontmatter.title,
-      description: entry.frontmatter.description,
-      publishedTime: entry.frontmatter.date,
-    },
-  };
+    path: `/writing/${entry.slug}`,
+    type: "article",
+    publishedTime: entry.frontmatter.date,
+  });
 }
 
 /** Up to three essays sharing a tag, most overlap first, then newest. */

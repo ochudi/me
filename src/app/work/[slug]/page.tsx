@@ -8,6 +8,7 @@ import { mdxComponents } from "@/components/Stat";
 import { getAll, getBySlug } from "@/lib/content";
 import { renderableCover } from "@/lib/cover";
 import { mdxOptions } from "@/lib/mdx";
+import { buildMetadata } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -19,10 +20,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const entry = await getBySlug("work", slug);
   if (!entry) return {};
-  return {
+  return buildMetadata({
     title: entry.frontmatter.title,
     description: entry.frontmatter.summary,
-  };
+    path: `/work/${entry.slug}`,
+    type: "article",
+  });
 }
 
 export default async function WorkCasePage({ params }: Props) {

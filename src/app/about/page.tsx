@@ -1,14 +1,16 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import PageHeader from "@/components/PageHeader";
 import { personJsonLd } from "@/lib/jsonld";
+import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "About",
   description:
     "Chudi Ofoma builds AI products, teaches computer science, and researches unsupervised clustering from Lagos.",
-};
+  path: "/about",
+  type: "profile",
+});
 
 export default function AboutPage() {
   return (

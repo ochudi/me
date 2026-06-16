@@ -5,6 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import Prose from "@/components/Prose";
 import { getAll, getBySlug } from "@/lib/content";
 import { mdxOptions } from "@/lib/mdx";
+import { buildMetadata } from "@/lib/seo";
 import { courseCode } from "@/content/teaching-calendar";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -17,10 +18,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const entry = await getBySlug("teaching", slug);
   if (!entry) return {};
-  return {
+  return buildMetadata({
     title: `Week ${entry.frontmatter.week}: ${entry.frontmatter.title}`,
     description: entry.frontmatter.summary,
-  };
+    path: `/teaching/${entry.slug}`,
+    type: "article",
+  });
 }
 
 export default async function LessonPage({ params }: Props) {

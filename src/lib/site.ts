@@ -1,6 +1,10 @@
 // Single source for contact + social links, so they are defined once instead
 // of copied across the footer, command palette, and structured data.
 export const site = {
+  name: "Chukwudi Ofoma",
+  alternateName: "Chudi Ofoma",
+  url: "https://ochudi.com",
+  siteName: "ochudi",
   email: "ofoma.chudi@gmail.com",
   studio: { name: "Greyform", url: "https://www.greyform.org" },
   socials: {
