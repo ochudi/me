@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import CanvasGate from "@/components/signatures/CanvasGate";
 import NowDashboard, {
   NowDashboardSkeleton,
@@ -7,37 +8,13 @@ import NowDashboard, {
 import { Logo } from "@/components/Logo";
 import Reveal from "@/components/Reveal";
 import SmoothScroll from "@/components/SmoothScroll";
-import { getAll, readingMinutes } from "@/lib/content";
+import { getAll, getTestimonials, readingMinutes } from "@/lib/content";
+import { renderableCover } from "@/lib/cover";
 import { personJsonLd } from "@/lib/jsonld";
 import { courseCode } from "@/content/teaching-calendar";
-
-const EMAIL = "ofoma.chudi@gmail.com";
+import { site } from "@/lib/site";
 
 const HEADLINE_WORDS = ["Chudi", "Ofoma."];
-
-const FEATURED_WORK = [
-  {
-    client: "Iphe Clan",
-    title: "ipheclan.com",
-    summary:
-      "Personal brand site for a TikTok creator with 4 million followers. One page, one voice, built to hold up under traffic spikes from viral posts.",
-    href: "/work/ipheclan",
-  },
-  {
-    client: "Whitesands School",
-    title: "Whitesands School",
-    summary:
-      "Digital reset for a 25-year-old Lagos school. New site, new admissions flow, and a design system the staff can run without a developer.",
-    href: "/work/whitesands",
-  },
-  {
-    client: "Plural Health",
-    title: "NeoScribe",
-    summary:
-      "Internal AI documentation tool at Plural Health. Turns clinical conversations into structured notes that clinicians approve rather than write.",
-    href: null,
-  },
-] as const;
 
 const ghostLinkDark =
   "border border-rule-dark px-5 py-3 font-mono text-label uppercase text-page transition-colors duration-200 hover:border-page/70";
@@ -48,7 +25,22 @@ const inlineLink =
 const eyebrowLight = "font-mono text-label uppercase text-muted";
 
 export default async function Home() {
-  const essays = (await getAll("writing")).slice(0, 2);
+  const [work, allWriting, testimonials] = await Promise.all([
+    getAll("work"),
+    getAll("writing"),
+    getTestimonials(),
+  ]);
+  const essays = allWriting.slice(0, 2);
+  // Featured work is chosen and ordered in the CMS; fall back to the most
+  // recent three so the section is never empty.
+  const featured = work
+    .filter((w) => w.frontmatter.featured)
+    .sort(
+      (a, b) =>
+        (a.frontmatter.featured_order ?? 99) -
+        (b.frontmatter.featured_order ?? 99),
+    );
+  const featuredWork = (featured.length ? featured : work).slice(0, 3);
   const deployed = process.env.NEXT_PUBLIC_BUILD_DATE ?? "unreleased";
 
   return (
@@ -77,7 +69,7 @@ export default async function Home() {
                 style={{ animationDelay: `${60 + i * 60}ms` }}
               >
                 {word}
-                {i < HEADLINE_WORDS.length - 1 ? " " : ""}
+                {i < HEADLINE_WORDS.length - 1 ? " " : ""}
               </span>
             ))}
           </h1>
@@ -138,36 +130,47 @@ export default async function Home() {
           </Reveal>
 
           <div className="mt-14">
-            {FEATURED_WORK.map((work, i) => (
-              <Reveal key={work.title} delay={i * 60}>
-                <article className="grid gap-8 border-t border-rule py-12 md:py-16 lg:grid-cols-2 lg:items-center lg:gap-16">
-                  <div
-                    aria-hidden
-                    className={`aspect-[16/10] w-full border border-rule bg-rule/40 ${
-                      i % 2 === 1 ? "lg:order-2" : ""
-                    }`}
-                  />
-                  <div className="flex flex-col gap-4">
-                    <p className={eyebrowLight}>{work.client}</p>
-                    <h3 className="font-serif text-h2">{work.title}</h3>
-                    <p className="max-w-prose text-body text-muted">
-                      {work.summary}
-                    </p>
-                    <div className="mt-2">
-                      {work.href ? (
-                        <Link href={work.href} className={inlineLink}>
+            {featuredWork.map((item, i) => {
+              const cover = renderableCover(item.frontmatter.cover);
+              return (
+                <Reveal key={item.slug} delay={i * 60}>
+                  <article className="grid gap-8 border-t border-rule py-12 md:py-16 lg:grid-cols-2 lg:items-center lg:gap-16">
+                    <Link
+                      href={`/work/${item.slug}`}
+                      aria-label={`${item.frontmatter.title} case study`}
+                      className={`group relative aspect-[16/10] w-full overflow-hidden border border-rule bg-rule/40 ${
+                        i % 2 === 1 ? "lg:order-2" : ""
+                      }`}
+                    >
+                      {cover && (
+                        <Image
+                          src={cover}
+                          alt={`${item.frontmatter.title} cover`}
+                          fill
+                          unoptimized
+                          sizes="(min-width: 1024px) 50vw, 100vw"
+                          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                        />
+                      )}
+                    </Link>
+                    <div className="flex flex-col gap-4">
+                      <p className={eyebrowLight}>{item.frontmatter.client}</p>
+                      <h3 className="font-serif text-h2">
+                        {item.frontmatter.title}
+                      </h3>
+                      <p className="max-w-prose text-body text-muted">
+                        {item.frontmatter.summary}
+                      </p>
+                      <div className="mt-2">
+                        <Link href={`/work/${item.slug}`} className={inlineLink}>
                           Read the case study
                         </Link>
-                      ) : (
-                        <span className="font-mono text-label uppercase text-muted">
-                          Case study on request
-                        </span>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                </article>
-              </Reveal>
-            ))}
+                  </article>
+                </Reveal>
+              );
+            })}
           </div>
 
           <Reveal className="border-t border-rule pt-10">
@@ -264,7 +267,48 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 7. Contact */}
+      {/* 7. Testimonials */}
+      {testimonials.length > 0 && (
+        <section className="bg-page py-20 md:py-32">
+          <div className="mx-auto max-w-6xl px-6">
+            <Reveal>
+              <p className={eyebrowLight}>Words</p>
+              <h2 className="mt-3 font-serif text-h2">What clients say.</h2>
+            </Reveal>
+            <div className="mt-14 grid gap-10 sm:grid-cols-3 sm:gap-8">
+              {testimonials.map((t, i) => (
+                <Reveal key={t.slug} delay={i * 60}>
+                  <figure className="flex h-full flex-col gap-6 border-t border-ink pt-6">
+                    <blockquote className="font-serif text-h3 italic">
+                      &ldquo;{t.quote}&rdquo;
+                    </blockquote>
+                    <figcaption className="mt-auto font-mono text-label uppercase text-muted">
+                      {t.url ? (
+                        <a
+                          href={t.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="transition-colors duration-200 hover:text-ink"
+                        >
+                          {t.author}
+                          {t.company ? ` / ${t.company}` : ""}
+                        </a>
+                      ) : (
+                        <>
+                          {t.author}
+                          {t.company ? ` / ${t.company}` : ""}
+                        </>
+                      )}
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 8. Contact */}
       <section className="bg-page py-20 md:py-32">
         <div className="mx-auto max-w-6xl px-6">
           <Reveal>
@@ -277,13 +321,13 @@ export default async function Home() {
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <a
-                href={`mailto:${EMAIL}`}
+                href={`mailto:${site.email}`}
                 className="inline-flex items-center justify-center border border-ink bg-ink px-5 py-3 font-mono text-label uppercase text-page transition-colors duration-200 hover:bg-page hover:text-ink"
               >
                 Email me
               </a>
               <a
-                href="https://www.greyform.org/start"
+                href={`${site.studio.url}/start`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center border border-rule px-5 py-3 font-mono text-label uppercase text-ink transition-colors duration-200 hover:border-ink"
@@ -296,7 +340,7 @@ export default async function Home() {
       </section>
       </main>
 
-      {/* 8. Footer */}
+      {/* 9. Footer */}
       <footer className="border-t border-rule-dark bg-ink py-16 text-page">
         <div className="mx-auto max-w-6xl px-6 pb-12">
           <Logo variant="lockup" size={28} animate />
@@ -306,13 +350,13 @@ export default async function Home() {
             <p className="text-label uppercase text-page/50">Contact</p>
             <ul className="mt-4 flex flex-col gap-2 text-page/70">
               <li>
-                <a href={`mailto:${EMAIL}`} className="hover:text-page">
-                  {EMAIL}
+                <a href={`mailto:${site.email}`} className="hover:text-page">
+                  {site.email}
                 </a>
               </li>
               <li>
                 <a
-                  href="https://github.com/ochudi"
+                  href={site.socials.github}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-page"
@@ -322,7 +366,7 @@ export default async function Home() {
               </li>
               <li>
                 <a
-                  href="https://www.linkedin.com/in/ochudi"
+                  href={site.socials.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-page"
@@ -332,7 +376,7 @@ export default async function Home() {
               </li>
               <li>
                 <a
-                  href="https://x.com/ochudi"
+                  href={site.socials.x}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-page"
@@ -377,7 +421,7 @@ export default async function Home() {
             <ul className="mt-4 flex flex-col gap-2 text-page/70">
               <li>
                 <a
-                  href="https://www.greyform.org"
+                  href={site.studio.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-page"

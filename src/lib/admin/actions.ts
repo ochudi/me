@@ -31,11 +31,15 @@ function parseScalars(fields: Field[], formData: FormData) {
     if (f.type === "image") continue; // handled after, with the file
     const raw = formData.get(f.name);
     const str = typeof raw === "string" ? raw : "";
-    if (LIST_FIELDS.has(f.name)) {
+    if (f.type === "boolean") {
+      row[f.name] = raw === "on" || raw === "true";
+    } else if (LIST_FIELDS.has(f.name)) {
       row[f.name] = splitList(str);
     } else if (NUMBER_FIELDS.has(f.name)) {
       const n = Number(str);
-      row[f.name] = Number.isFinite(n) ? n : null;
+      // Empty number: omit so the column default or existing value stands,
+      // rather than writing null into a NOT NULL column.
+      if (str.trim() !== "" && Number.isFinite(n)) row[f.name] = n;
     } else {
       const t = str.trim();
       row[f.name] = t === "" ? null : t;

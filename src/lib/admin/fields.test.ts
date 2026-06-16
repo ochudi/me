@@ -32,10 +32,16 @@ describe("splitList", () => {
 });
 
 describe("collection field configs", () => {
-  it("every collection has a slug and a body field", () => {
+  it("every collection has a slug field", () => {
     for (const key of COLLECTION_KEYS) {
       const names = COLLECTION_FIELDS[key].map((f) => f.name);
       expect(names).toContain("slug");
+    }
+  });
+
+  it("content collections have a body field", () => {
+    for (const key of ["work", "writing", "teaching"] as const) {
+      const names = COLLECTION_FIELDS[key].map((f) => f.name);
       expect(names).toContain("body");
     }
   });

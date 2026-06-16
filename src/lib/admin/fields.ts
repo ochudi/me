@@ -13,7 +13,8 @@ export type FieldType =
   | "select"
   | "url"
   | "image"
-  | "markdown";
+  | "markdown"
+  | "boolean";
 
 export type Field = {
   name: string;
@@ -24,7 +25,7 @@ export type Field = {
   help?: string;
 };
 
-export type CollectionKey = "work" | "writing" | "teaching";
+export type CollectionKey = "work" | "writing" | "teaching" | "testimonials";
 
 const SLUG: Field = {
   name: "slug",
@@ -61,6 +62,18 @@ export const COLLECTION_FIELDS: Record<CollectionKey, Field[]> = {
       required: true,
     },
     { name: "date", label: "Date", type: "date", required: true },
+    {
+      name: "featured",
+      label: "Featured on homepage",
+      type: "boolean",
+      help: "Show this case study in the homepage work section.",
+    },
+    {
+      name: "featured_order",
+      label: "Featured order",
+      type: "number",
+      help: "Lower numbers come first. Only used when featured is on.",
+    },
     BODY,
   ],
   writing: [
@@ -81,6 +94,26 @@ export const COLLECTION_FIELDS: Record<CollectionKey, Field[]> = {
     { name: "date", label: "Date", type: "date", required: true },
     BODY,
   ],
+  testimonials: [
+    {
+      name: "slug",
+      label: "Slug",
+      type: "text",
+      required: true,
+      help: "Unique id, e.g. andrew-eze-whitesands.",
+    },
+    { name: "quote", label: "Quote", type: "textarea", required: true },
+    { name: "author", label: "Author", type: "text", required: true },
+    { name: "role", label: "Role", type: "text" },
+    { name: "company", label: "Company", type: "text" },
+    { name: "url", label: "Link", type: "url" },
+    {
+      name: "sort_order",
+      label: "Order",
+      type: "number",
+      help: "Lower numbers come first.",
+    },
+  ],
 };
 
 // The /now page is a single row with its own shape.
@@ -99,9 +132,15 @@ export const COLLECTION_LABEL: Record<CollectionKey, string> = {
   work: "Work",
   writing: "Writing",
   teaching: "Teaching",
+  testimonials: "Testimonials",
 };
 
-export const COLLECTION_KEYS: CollectionKey[] = ["work", "writing", "teaching"];
+export const COLLECTION_KEYS: CollectionKey[] = [
+  "work",
+  "writing",
+  "teaching",
+  "testimonials",
+];
 
 export function isCollectionKey(v: string): v is CollectionKey {
   return (COLLECTION_KEYS as string[]).includes(v);
@@ -125,4 +164,12 @@ export const LIST_FIELDS = new Set([
 ]);
 
 /** Columns that are integers in the DB. */
-export const NUMBER_FIELDS = new Set(["year", "week"]);
+export const NUMBER_FIELDS = new Set([
+  "year",
+  "week",
+  "featured_order",
+  "sort_order",
+]);
+
+/** Columns that are booleans in the DB. */
+export const BOOLEAN_FIELDS = new Set(["featured"]);

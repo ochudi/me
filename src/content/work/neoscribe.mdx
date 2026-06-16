@@ -5,17 +5,37 @@ year: 2026
 role: AI engineer
 stack: [Next.js, FastAPI, Postgres]
 type: internal
-summary: Internal AI documentation tool that turns clinical conversations into structured notes.
-cover: /covers/neoscribe.jpg
+summary: Internal AI tool that turns clinical conversations into structured notes a clinician approves rather than writes.
+cover: https://res.cloudinary.com/dud5owpai/image/upload/v1781459554/neoscribe-webapp-screenshot_ntaxic.png
+live_url: https://neoscribe.vercel.app
 status: internal
 date: "2026-01-15"
+featured: true
+featured_order: 3
 ---
 
-Placeholder context. Why clinical documentation eats clinician time and
-what an internal tool can do about it.
+<Stats>
+  <Stat value="100%" label="notes a clinician approves" />
+  <Stat value="0" label="notes published unchecked" />
+  <Stat value="AI" label="draft, human decision" />
+</Stats>
 
-Placeholder approach. The model pipeline, the review workflow where
-clinicians approve notes rather than write them, and the safety rails.
+## Context
 
-Placeholder outcome. What can be shared publicly about an internal tool.
-Details available on request. The real case study replaces this file.
+Clinical documentation eats clinician time, and the easy version of an AI fix
+makes the dangerous trade of speed for trust. NeoScribe is an internal tool at
+Plural Health built the other way around: the model drafts, the clinician
+decides.
+
+## Approach
+
+The pipeline turns a clinical conversation into a structured draft note. That
+draft never becomes a record on its own. It enters a review workflow where a
+clinician edits and approves, so the human stays accountable for every line
+and nothing is published unchecked. The interface is built to make that review
+fast rather than to hide it.
+
+## Outcome
+
+The product lead called it impressively intuitive, and the demo carried itself.
+As an internal tool the specifics stay private; more is available on request.

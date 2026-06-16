@@ -5,18 +5,38 @@ year: 2026
 role: Design and build
 stack: [Next.js, Tailwind, Vercel]
 type: client
-summary: Personal brand site for a TikTok creator with 4 million followers.
-cover: /covers/ipheclan.jpg
-live_url: https://ipheclan.com
+summary: Personal brand site for a TikTok creator with 4 million followers. One page, built to hold up when a post goes viral.
+cover: https://res.cloudinary.com/dud5owpai/image/upload/v1781459595/ipheclan-website-screenshot_jb7a6t.png
+live_url: https://www.ipheclan.com
 status: live
 date: "2026-03-20"
+featured: true
+featured_order: 1
 ---
 
-Placeholder context. Who Iphe Clan is, what the brief asked for, and why
-a creator with 4 million followers needed one page instead of many.
+<Stats>
+  <Stat value="4M" label="TikTok followers" />
+  <Stat value="1" label="page, built for spikes" />
+  <Stat value="2026" label="designed and shipped" />
+</Stats>
 
-Placeholder approach. The design decisions, the build, and what had to
-hold up when a post went viral and traffic spiked.
+## Context
 
-Placeholder outcome. What shipped, what the numbers said, and what the
-client does with it now. The real case study replaces this file.
+Iphe Clan is a TikTok creator with an audience of four million. The brief was
+deliberately small: one page that works as a home base, links out to the
+platforms, and never falls over when a video takes off and tens of thousands
+of people tap the link in the same hour.
+
+## Approach
+
+One page, one voice. The whole site is a single statically rendered route on
+Next.js, served from Vercel's edge, so a traffic spike is just more cache hits
+rather than more load. Type and motion carry the personality; there is no
+heavy hero video to slow the first paint on a phone, which is where almost all
+of the audience lands.
+
+## Outcome
+
+It shipped fast, and the client was happy enough to clear the balance before
+the site even went live. It now sits behind the link in every bio, ready for
+the next viral post.

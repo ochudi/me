@@ -39,7 +39,7 @@ export default async function CollectionList({
               className="group flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-5 transition-colors duration-200 hover:bg-rule/20 focus-visible:outline-ink"
             >
               <span className="font-serif text-h3 group-hover:underline">
-                {String(row.title ?? row.slug ?? "Untitled")}
+                {String(row.title ?? row.author ?? row.slug ?? "Untitled")}
               </span>
               <span className="flex items-center gap-4 font-mono text-label uppercase text-muted">
                 <span>{String(row.date ?? "").slice(0, 10)}</span>

@@ -1,7 +1,7 @@
 import "server-only";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { TABLE } from "@/lib/supabase/env";
-import type { CollectionKey } from "./fields";
+import { COLLECTION_KEYS, type CollectionKey } from "./fields";
 
 export type Row = Record<string, unknown> & { id: string };
 
@@ -13,7 +13,7 @@ export async function adminList(collection: CollectionKey): Promise<Row[]> {
   const { data } = await supabase
     .from(TABLE[collection])
     .select("*")
-    .order("date", { ascending: false });
+    .order("created_at", { ascending: false });
   return (data ?? []) as Row[];
 }
 
@@ -32,13 +32,11 @@ export async function adminGet(
 
 export async function adminCounts(): Promise<Record<CollectionKey, number>> {
   const supabase = await createSupabaseServerClient();
-  const keys: CollectionKey[] = ["work", "writing", "teaching"];
-  const out = { work: 0, writing: 0, teaching: 0 } as Record<
-    CollectionKey,
-    number
-  >;
+  const out = Object.fromEntries(
+    COLLECTION_KEYS.map((k) => [k, 0]),
+  ) as Record<CollectionKey, number>;
   await Promise.all(
-    keys.map(async (k) => {
+    COLLECTION_KEYS.map(async (k) => {
       const { count } = await supabase
         .from(TABLE[k])
         .select("id", { count: "exact", head: true });

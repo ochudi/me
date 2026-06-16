@@ -4,6 +4,7 @@ import { Logo } from "@/components/Logo";
 import Reveal from "@/components/Reveal";
 import GlassCard from "@/components/opus-dei/GlassCard";
 import PlanOfLife from "@/components/opus-dei/PlanOfLife";
+import { site } from "@/lib/site";
 
 // A quiet, unlisted page. noindex keeps it the easter egg it is: you reach it
 // from the command palette or a shared link, not a search engine.
@@ -216,7 +217,7 @@ export default function OpusDeiPage() {
                 >
                   escriva.org
                 </a>
-                <a href="mailto:ofoma.chudi@gmail.com" className={ghostLink}>
+                <a href={`mailto:${site.email}`} className={ghostLink}>
                   Email me
                 </a>
               </div>

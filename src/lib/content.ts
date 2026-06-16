@@ -4,6 +4,7 @@ import matter from "gray-matter";
 import { z } from "zod";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { supabaseConfigured, TABLE } from "@/lib/supabase/env";
+import { testimonials as fileTestimonials, type Testimonial } from "@/content/testimonials";
 
 const CONTENT_DIR = path.join(process.cwd(), "src", "content");
 
@@ -49,6 +50,8 @@ const workSchema = z.object({
   status: z.enum(["live", "internal", "archived"]),
   date: z.string().min(1),
   draft: z.boolean().optional().default(false),
+  featured: z.boolean().optional().default(false),
+  featured_order: z.number().int().optional(),
 });
 
 const schemas = {
@@ -150,6 +153,8 @@ function rowToEntry<C extends Collection>(
       status: row.status,
       date,
       draft,
+      featured: row.featured ?? false,
+      featured_order: row.featured_order ?? undefined,
     };
   } else if (collection === "teaching") {
     candidate = {
@@ -287,5 +292,34 @@ export async function getNow(): Promise<Now | null> {
     };
   } catch {
     return getNowFromFile();
+  }
+}
+
+export type { Testimonial };
+
+/** Published testimonials, ordered. Supabase first, the content file as fallback. */
+export async function getTestimonials(): Promise<Testimonial[]> {
+  if (!supabaseConfigured) return fileTestimonials;
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data, error } = await supabase
+      .from("ochudi_testimonials")
+      .select("*")
+      .eq("published", true)
+      .order("sort_order", { ascending: true });
+    if (error || !data || data.length === 0) return fileTestimonials;
+    return data.map((row) => {
+      const r = row as Record<string, unknown>;
+      return {
+        slug: String(r.slug),
+        quote: String(r.quote ?? ""),
+        author: String(r.author ?? ""),
+        role: r.role ? String(r.role) : undefined,
+        company: r.company ? String(r.company) : undefined,
+        url: r.url ? String(r.url) : undefined,
+      };
+    });
+  } catch {
+    return fileTestimonials;
   }
 }

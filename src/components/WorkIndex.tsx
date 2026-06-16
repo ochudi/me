@@ -74,6 +74,7 @@ export default function WorkIndex({ entries }: { entries: WorkIndexEntry[] }) {
                   src={entry.cover}
                   alt={`${entry.title} cover`}
                   fill
+                  unoptimized
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
                 />

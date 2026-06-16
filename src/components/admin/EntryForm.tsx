@@ -22,7 +22,21 @@ function FieldRow({ field, row }: { field: Field; row: Row | null }) {
   const id = `f-${field.name}`;
   let control;
 
-  if (field.type === "textarea") {
+  if (field.type === "boolean") {
+    const checked = value === "true" || value === "on";
+    return (
+      <label className="flex items-center gap-3">
+        <input
+          type="checkbox"
+          name={field.name}
+          defaultChecked={checked}
+          className="h-4 w-4 accent-ink"
+        />
+        <span className={labelClass}>{field.label}</span>
+        {field.help && <span className="text-sm text-muted">{field.help}</span>}
+      </label>
+    );
+  } else if (field.type === "textarea") {
     control = (
       <textarea id={id} name={field.name} defaultValue={value} rows={3} className={inputClass} required={field.required} />
     );

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import PageHeader from "@/components/PageHeader";
 import { personJsonLd } from "@/lib/jsonld";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
@@ -102,10 +103,10 @@ export default function AboutPage() {
       <p className="mt-16 max-w-2xl text-body">
         Best way to reach me is email.{" "}
         <a
-          href="mailto:ofoma.chudi@gmail.com"
+          href={`mailto:${site.email}`}
           className="underline underline-offset-4"
         >
-          ofoma.chudi@gmail.com
+          {site.email}
         </a>
         .
       </p>

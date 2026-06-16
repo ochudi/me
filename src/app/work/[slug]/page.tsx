@@ -1,12 +1,12 @@
-import fs from "node:fs";
-import path from "node:path";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Prose from "@/components/Prose";
+import { mdxComponents } from "@/components/Stat";
 import { getAll, getBySlug } from "@/lib/content";
+import { renderableCover } from "@/lib/cover";
 import { mdxOptions } from "@/lib/mdx";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -34,13 +34,7 @@ export default async function WorkCasePage({ params }: Props) {
   const all = await getAll("work");
   const index = all.findIndex((e) => e.slug === slug);
   const next = all[(index + 1) % all.length];
-  // Cover can be a remote Supabase URL or a local file in /public.
-  const isRemoteCover = /^https?:\/\//.test(fm.cover);
-  const hasCover =
-    fm.cover.length > 0 &&
-    fm.cover !== "placeholder" &&
-    (isRemoteCover ||
-      fs.existsSync(path.join(process.cwd(), "public", fm.cover)));
+  const cover = renderableCover(fm.cover);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -74,13 +68,14 @@ export default async function WorkCasePage({ params }: Props) {
 
       {/* Full-bleed cover, placeholder block until real artwork lands. */}
       <div className="mt-12 md:mt-16">
-        {hasCover ? (
+        {cover ? (
           <div className="relative aspect-[16/10] w-full md:aspect-[2/1]">
             <Image
-              src={fm.cover}
+              src={cover}
               alt={`${fm.title} cover`}
               fill
               priority
+              unoptimized
               className="object-cover"
             />
           </div>
@@ -126,7 +121,11 @@ export default async function WorkCasePage({ params }: Props) {
 
       <article className="mx-auto max-w-6xl px-6 py-12 md:py-16">
         <Prose>
-          <MDXRemote source={entry.content} options={mdxOptions} />
+          <MDXRemote
+            source={entry.content}
+            options={mdxOptions}
+            components={mdxComponents}
+          />
         </Prose>
       </article>
 

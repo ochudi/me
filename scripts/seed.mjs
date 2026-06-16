@@ -84,6 +84,8 @@ const MAP = {
     date: asDate(fm.date),
     body,
     published: fm.draft !== true,
+    featured: fm.featured === true,
+    featured_order: fm.featured_order ?? null,
   }),
   writing: ({ slug, fm, body }) => ({
     slug,
@@ -127,6 +129,21 @@ function nowRow() {
   ];
 }
 
+function testimonialRows() {
+  const file = path.join(CONTENT, "testimonials.json");
+  if (!fs.existsSync(file)) return [];
+  return JSON.parse(fs.readFileSync(file, "utf8")).map((t) => ({
+    slug: t.slug,
+    quote: t.quote,
+    author: t.author,
+    role: t.role ?? null,
+    company: t.company ?? null,
+    url: t.url ?? null,
+    sort_order: t.sort_order ?? 0,
+    published: true,
+  }));
+}
+
 function adminRows() {
   return (process.env.ADMIN_EMAILS ?? "")
     .split(",")
@@ -140,5 +157,6 @@ await upsert("ochudi_work", readCollection("work").map(MAP.work), "slug");
 await upsert("ochudi_writing", readCollection("writing").map(MAP.writing), "slug");
 await upsert("ochudi_teaching", readCollection("teaching").map(MAP.teaching), "slug");
 await upsert("ochudi_now", nowRow(), "id");
+await upsert("ochudi_testimonials", testimonialRows(), "slug");
 await upsert("ochudi_admins", adminRows(), "email");
 console.log("Done.");

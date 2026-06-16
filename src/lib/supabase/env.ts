@@ -28,6 +28,7 @@ export const TABLE = {
   work: "ochudi_work",
   writing: "ochudi_writing",
   teaching: "ochudi_teaching",
+  testimonials: "ochudi_testimonials",
   now: "ochudi_now",
   settings: "ochudi_settings",
 } as const;

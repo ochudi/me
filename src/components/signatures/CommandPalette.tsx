@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
+import { site } from "@/lib/site";
 import styles from "./palette.module.css";
 
 export type PaletteEntry = { title: string; slug: string };
@@ -18,12 +19,12 @@ type CollectionPage = "work" | "writing" | "teaching";
 
 const HISTORY_KEY = "ochudi.cmd.history";
 const HISTORY_MAX = 20;
-const EMAIL = "ofoma.chudi@gmail.com";
+const EMAIL = site.email;
 const SOURCE_URL = "https://github.com/ochudi/ochudi.com";
-const GITHUB_URL = "https://github.com/ochudi";
-const LINKEDIN_URL = "https://www.linkedin.com/in/ochudi";
-const X_URL = "https://x.com/ochudi";
-const GREYFORM_URL = "https://www.greyform.org";
+const GITHUB_URL = site.socials.github;
+const LINKEDIN_URL = site.socials.linkedin;
+const X_URL = site.socials.x;
+const GREYFORM_URL = site.studio.url;
 
 // Exact-match easter eggs on the raw input. They never appear as items, so
 // they surface through the empty state, which they reach naturally because
