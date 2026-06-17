@@ -7,6 +7,12 @@ export const site = {
   siteName: "ochudi",
   email: "ofoma.chudi@gmail.com",
   studio: { name: "Greyform", url: "https://www.greyform.org" },
+  // Public source repo for this site, and the clustering research paper the
+  // canvas is built on. Centralised so the "View source" and "Read the paper"
+  // links live in one place.
+  repo: "https://github.com/ochudi/me",
+  paper:
+    "https://panatlanticuniversity-my.sharepoint.com/:w:/g/personal/chukwudi_ofoma_pau_edu_ng/IQDYTGErXc0aTa9oWu38abFGASM6HAjklhKoBWQwP30ktNk?e=SyQob7",
   socials: {
     github: "https://github.com/ochudi",
     linkedin: "https://www.linkedin.com/in/ochudi",

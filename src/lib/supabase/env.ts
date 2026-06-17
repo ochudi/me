@@ -1,6 +1,6 @@
 // Single source of truth for whether Supabase is wired up. Every client
 // helper checks this first, so the whole app degrades gracefully (the read
-// path falls back to the bundled MDX files) when the env is absent — which
+// path falls back to the bundled MDX files) when the env is absent, which
 // is what keeps local builds and CI green without any secrets.
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 export const SUPABASE_ANON_KEY =

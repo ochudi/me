@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Info, X } from "lucide-react";
+import { site } from "@/lib/site";
 import type { ClusterTheme } from "./ClusterCanvas";
 
-// Placeholders until the real links exist.
-const PAPER_URL = "#";
-const SOURCE_URL = "https://github.com/ochudi/ochudi.com";
+const PAPER_URL = site.paper;
+const SOURCE_URL = site.repo;
 
 const PANEL_TRANSITION =
   "transition-[opacity,transform] duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none data-[open=false]:invisible data-[open=false]:translate-x-6 data-[open=false]:opacity-0 data-[open=true]:translate-x-0 data-[open=true]:opacity-100";
@@ -133,6 +133,8 @@ export default function ClusterInfo({ theme }: { theme: ClusterTheme }) {
             microscopy.{" "}
             <a
               href={PAPER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               tabIndex={open ? 0 : -1}
               className="underline underline-offset-2"
             >

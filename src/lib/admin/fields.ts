@@ -1,6 +1,6 @@
 // Single source of truth for the admin forms. The editor renders from this
 // config and the save action parses FormData from it, so changing a field is
-// a one-line edit here — nothing else to touch. This is what keeps the admin
+// a one-line edit here, nothing else to touch. This is what keeps the admin
 // cheap to maintain and safe to hand to someone else.
 import { WORK_TYPES } from "@/lib/content";
 

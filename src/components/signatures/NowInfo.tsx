@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Info, X } from "lucide-react";
+import { site } from "@/lib/site";
 
-const NOW_MD_URL =
-  "https://github.com/ochudi/ochudi.com/blob/main/src/content/now.md";
+const NOW_MD_URL = `${site.repo}/blob/main/src/content/now.md`;
 
 const PANEL_TRANSITION =
   "transition-[opacity,transform] duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none data-[open=false]:invisible data-[open=false]:translate-x-6 data-[open=false]:opacity-0 data-[open=true]:translate-x-0 data-[open=true]:opacity-100";

@@ -6,7 +6,7 @@ import { COLLECTION_KEYS, type CollectionKey } from "./fields";
 export type Row = Record<string, unknown> & { id: string };
 
 // Admin reads use the cookie-bound (authenticated) client, so row-level
-// security returns ALL rows including drafts — unlike the public read path.
+// security returns ALL rows including drafts, unlike the public read path.
 
 export async function adminList(collection: CollectionKey): Promise<Row[]> {
   const supabase = await createSupabaseServerClient();
