@@ -5,11 +5,21 @@ date: "2026-06-05"
 tags: [clustering, engineering]
 ---
 
-Placeholder introduction. The homepage runs k-means every frame and
-DBSCAN every tenth frame over 500 points. This essay walks through how,
-and why no clustering library was involved.
+The animation in the corner of the homepage is not a video and not a GIF. It
+is k-means and DBSCAN running on 500 points, every frame, in your browser. I
+wrote both algorithms by hand. No clustering library, no WebGL, just a 2D
+canvas and a few typed arrays. This is how it works and why it stays cheap.
 
-The assignment step is the whole game. Flat typed arrays, no objects:
+## Points are flat arrays, not objects
+
+Every point is two numbers, x and y, and all of them live in one
+`Float32Array` laid out as `[x0, y0, x1, y1, ...]`. Cluster assignments live in
+a parallel `Int32Array`. There are no point objects, so there is nothing for
+the garbage collector to chase between frames, and the data sits in cache the
+way the loops want to read it.
+
+The assignment step is the whole game. For each point, find the nearest
+centroid:
 
 ```ts
 export function assign(
@@ -17,13 +27,81 @@ export function assign(
   centroids: Float32Array,
   assignments: Int32Array,
 ): boolean {
-  // nearest centroid per point, O(n * k) per frame
+  const n = points.length / 2;
+  const k = centroids.length / 2;
+  let changed = false;
+  for (let i = 0; i < n; i++) {
+    let best = 0;
+    let bestD = Infinity;
+    for (let c = 0; c < k; c++) {
+      const d = sqDist(points, i, centroids[c * 2], centroids[c * 2 + 1]);
+      if (d < bestD) {
+        bestD = d;
+        best = c;
+      }
+    }
+    if (assignments[i] !== best) {
+      assignments[i] = best;
+      changed = true;
+    }
+  }
+  return changed;
 }
 ```
 
-Placeholder middle. Anchor springs preserve the blob structure the
-algorithms are there to find, and a spatial grid keeps DBSCAN region
-queries cheap enough to run while a slider drags.
+That is O(n times k) per frame. With 500 points and three clusters it is a few
+thousand squared distances, which a phone does in well under a millisecond. I
+compare squared distances and never take a square root, because the nearest
+centroid is the same either way.
 
-Placeholder ending. What 60 frames a second leaves room for, and what it
-does not. The real essay replaces this file.
+## k-means converges; the seeding is what matters
+
+A k-means step is the assign above plus moving each centroid to the mean of its
+members. Run it to convergence and you get Lloyd's algorithm. The part that
+decides whether the clusters look good is the start, not the iteration: random
+initial centroids collapse onto each other. I seed with k-means++, which places
+each new centroid on a point chosen with probability proportional to its
+squared distance from the centroids already down, so they spread across the
+data before the first step runs.
+
+When you drag the k slider, I do not throw the clustering away and start over. I
+resize the centroid set and keep the survivors, so a cluster that lives through
+the change keeps its identity and its colour instead of flickering to a new one.
+
+## DBSCAN needs a grid, and runs less often
+
+DBSCAN is a different question. It does not take a k. It grows clusters out of
+dense neighbourhoods and labels the sparse leftovers as noise. The cost is the
+region query: for a point, which other points lie within epsilon? Done naively
+that is O(n squared) per query.
+
+So I bucket the points into a uniform grid with cells about epsilon wide, stored
+in compressed-sparse-row layout, and a query only looks at the handful of cells
+around the point instead of all 500. Clusters then expand breadth-first from
+core points. DBSCAN runs every tenth frame rather than every frame, which is
+plenty for something drifting slowly, and it reuses the same label buffer each
+time so a run allocates nothing.
+
+One wrinkle: DBSCAN's cluster ids depend on scan order, so the same blob can
+come back under a different id on the next run and the colours would strobe.
+After each run I match the new labels to the previous ones by greatest member
+overlap, so a cluster that persists keeps its colour.
+
+## The motion is springs, not a clustering result
+
+The points are not where the clustering puts them. Each point has an anchor and
+a spring that pulls it toward that anchor, and the clustering reads the points
+wherever the springs leave them. To morph the field into a ring or a wave, I
+move the anchor targets and let the springs do the travel, which adds no
+per-frame clustering cost. The structure you see, three to five loose blobs on a
+ring, is what the anchors hold and what the algorithms are there to find.
+
+## What 60 frames a second leaves room for
+
+On a mid-range phone, or when the visitor asks for reduced motion, the loop does
+not run at all. It draws one converged frame and stops. The algorithms still
+ran, once, to produce it. That is the rule for the whole site: the effect is
+real, but it is never worth a dropped frame or a spun-up fan on someone's
+laptop. The canvas is the visual form of research I did into unsupervised
+clustering, so it had to actually cluster. It just did not have to cost
+anything to watch.

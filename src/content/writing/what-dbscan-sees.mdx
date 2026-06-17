@@ -5,4 +5,58 @@ date: "2026-04-02"
 tags: [clustering, unsupervised]
 ---
 
-Placeholder entry. The real essay replaces this file.
+k-means is the first clustering algorithm most people learn, and for round,
+well-separated blobs it is hard to beat. But it carries two assumptions that
+are easy to miss until they break: you have to tell it how many clusters there
+are, and it draws every boundary as if the clusters were convex balls around a
+centre. DBSCAN drops both. The toggle on my homepage canvas switches between
+them so you can watch the difference.
+
+## k-means partitions space; it does not find shapes
+
+A k-means cluster is "the points closer to this centroid than to any other."
+That rule tiles the plane into straight-edged regions, so k-means can only ever
+carve the data into roughly circular pieces. Hand it two interleaved crescents,
+or a small dense cluster sitting next to a large loose one, and it splits them
+down the middle, because the centroid-distance rule has no idea the shapes were
+there. It also has to put every point in a cluster, so a stray outlier drags a
+centroid toward it.
+
+And you have to pick k up front. Pick wrong and the algorithm still returns a
+confident answer; it just splits one real cluster in two, or fuses two into
+one.
+
+## DBSCAN clusters by density instead
+
+DBSCAN asks a local question: is this point in a crowd? It has two knobs,
+epsilon (how far is "near") and minPts (how many neighbours make a crowd). A
+point with at least minPts neighbours within epsilon is a core point. Clusters
+are chains of core points and the points reachable from them; anything that
+never lands in a dense enough neighbourhood is labelled noise and left out.
+
+Three things fall out of that definition:
+
+- **It finds the number of clusters itself.** You do not pass a k. The density
+  structure decides how many clusters there are.
+- **It handles arbitrary shapes.** Because a cluster grows by reachability, not
+  by distance to a centre, DBSCAN follows a crescent or a ring or an S as
+  easily as a blob. This is the case k-means cannot see.
+- **It has a name for noise.** Outliers are not forced into a cluster. They are
+  labelled noise, which is often the most useful output of all.
+
+## The cost, and where each one wins
+
+DBSCAN is not free. Its work is the neighbour lookup, and a naive version is
+quadratic in the number of points, which is why my canvas runs region queries
+on a spatial grid so each one touches a few nearby cells instead of every
+point. It is also sensitive to its two knobs: too small an epsilon and
+everything is noise, too large and separate clusters merge into one. Where
+density varies a lot across the data, a single epsilon struggles, which is the
+gap variants like HDBSCAN exist to close.
+
+So it is not that DBSCAN is better. k-means is faster, simpler, and exactly
+right when you know how many clusters you want and they are roughly round.
+DBSCAN earns its place when you do not know k, when the clusters are shaped, or
+when telling signal from noise is the actual job. Watching them disagree on the
+same drifting points, live, taught me more about both than any static figure
+did.
