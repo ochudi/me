@@ -69,11 +69,12 @@ export default async function Home() {
             {HEADLINE_WORDS.map((word, i) => (
               <span
                 key={word}
-                className="hero-word inline-block"
+                // mr keeps the word gap: a trailing space inside an
+                // inline-block collapses, which ran the name together.
+                className={`hero-word inline-block ${i < HEADLINE_WORDS.length - 1 ? "mr-[0.25em]" : ""}`}
                 style={{ animationDelay: `${60 + i * 60}ms` }}
               >
                 {word}
-                {i < HEADLINE_WORDS.length - 1 ? " " : ""}
               </span>
             ))}
           </h1>

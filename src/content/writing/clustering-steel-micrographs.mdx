@@ -1,9 +1,80 @@
 ---
-title: Notes on clustering steel micrographs
-description: Grouping grain structures without labels.
+title: Clustering deep features to audit defect labels
+description: ResNet-50 embeddings, three clustering algorithms, and what they reveal about an industrial defect dataset.
 date: "2026-05-12"
-tags: [research, steel]
-draft: true
+tags: [research, clustering, unsupervised]
 ---
 
-Placeholder entry. The real essay replaces this file.
+CNN defect detectors are only as good as their labels, and industrial defect
+labels are expensive, slow, and inconsistent. Two annotators disagree on where
+a crack ends and a blowhole begins. My research asks a different question: if
+you run a pretrained network over the images and cluster what it sees, does the
+structure it finds agree with the labels, and where it disagrees, is the model
+wrong or the label?
+
+## The pipeline
+
+The setup is deliberately simple, because the point is the annotation-scarce
+case where you cannot afford to fine-tune. A frozen ResNet-50, pretrained on
+ImageNet, encodes each image into a 2,048-dimensional feature vector from the
+layer before the classifier. PCA compresses that to 50 dimensions, keeping
+about 85% of the variance, which both fights the curse of dimensionality and
+makes the neighbour searches cheap. Then three clustering algorithms run on the
+same embeddings: K-Means, Agglomerative Clustering with Ward linkage, and
+DBSCAN. The benchmark is Magnetic-Tile-Defect: 863 grey-scale surface images
+across five classes (Blowhole, Break, Crack, Fray, and defect-Free).
+
+## What the three algorithms disagreed about
+
+The headline is that the choice of algorithm changes the answer, and the
+intuitive choice is not the best one.
+
+Agglomerative Clustering aligned best with the real classes: NMI 0.323, ARI
+0.158, purity 0.511. K-Means won on silhouette score (0.268) but that is a
+geometric measure that rewards round, equal-variance clusters, and it splits
+classes that do not have that shape. The clearest example: the defect-free
+class lives on a non-convex sub-manifold, and K-Means cut it in half across two
+clusters while Agglomerative kept 142 of 143 of those images together (99.3%
+purity). Higher silhouette, worse semantics. That gap is the whole lesson.
+
+DBSCAN failed, and the failure is informative. It assumes clusters are dense
+regions separated by sparse gaps, but ResNet-50 embeddings form a
+near-continuous manifold with no clean gaps to cut on. The k-distance graph
+used to pick its radius rose smoothly instead of showing an elbow, which is the
+tell. The result: 87.8% of the images collapsed into a single mega-cluster.
+This is the same DBSCAN that handles arbitrary shapes beautifully on the
+homepage canvas; on a deep embedding space its core assumption simply does not
+hold.
+
+## The finding I did not expect
+
+The defect-free class did not form one cluster. It formed three tight,
+well-separated sub-clusters. Nothing in the labels says "defect-free" is three
+things, but the feature space insists it is, most likely three distinct surface
+textures or capture conditions on the production line. That is clustering
+working as an annotation audit: it surfaced structure inside a category that
+everyone had treated as homogeneous, which no purely supervised model would
+ever report.
+
+The same mechanism finds likely label errors. Where a cluster's membership
+crosses a label boundary, for example Break images sitting in a cluster
+dominated by Fray, those boundary-crossing samples are exactly the ones worth a
+second human look. This matches the confident-learning result that mislabelled
+examples concentrate at cluster boundaries. So instead of relabelling
+everything, you relabel the few hundred the clustering flags.
+
+## Why this matters off the benchmark
+
+I ran the same pipeline on a proprietary inspection dataset from a
+non-destructive-testing company in the steel sector. The cluster assignments
+were handed to their domain engineers, and they read as consistent with expert
+visual judgement. That is the part that makes this more than a benchmark
+exercise: the structure deep features expose lines up with what an experienced
+inspector sees, which means clustering can point a labelling budget at the
+images that actually need it.
+
+[The full paper](https://drive.google.com/file/d/1oSR3C2GcvoWdfduBhGSswJwskHp5ly7_/view?usp=sharing)
+has the metrics, the heatmaps, and the t-SNE plots. Next I want
+to fine-tune the backbone inside a joint clustering objective and close the loop
+into active learning, where a human is asked to relabel only the
+highest-uncertainty samples at the cluster boundaries.

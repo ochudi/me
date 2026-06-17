@@ -12,7 +12,7 @@ export const site = {
   // links live in one place.
   repo: "https://github.com/ochudi/me",
   paper:
-    "https://panatlanticuniversity-my.sharepoint.com/:w:/g/personal/chukwudi_ofoma_pau_edu_ng/IQDYTGErXc0aTa9oWu38abFGASM6HAjklhKoBWQwP30ktNk?e=SyQob7",
+    "https://drive.google.com/file/d/1oSR3C2GcvoWdfduBhGSswJwskHp5ly7_/view?usp=sharing",
   socials: {
     github: "https://github.com/ochudi",
     linkedin: "https://www.linkedin.com/in/ochudi",

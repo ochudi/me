@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CommandPaletteLazy from "@/components/signatures/CommandPaletteLazy";
+import MobileMenu from "@/components/MobileMenu";
 import { getAll } from "@/lib/content";
 import "./globals.css";
 
@@ -115,6 +116,7 @@ export default async function RootLayout({
           Skip to content
         </a>
         <div id="content">{children}</div>
+        <MobileMenu />
         <CommandPaletteLazy items={paletteItems} />
         <Analytics />
         <SpeedInsights />

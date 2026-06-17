@@ -69,23 +69,25 @@ export default async function WorkCasePage({ params }: Props) {
         <p className="mt-6 max-w-2xl text-body text-muted">{fm.summary}</p>
       </div>
 
-      {/* Full-bleed cover, placeholder block until real artwork lands. */}
+      {/* Full-bleed cover. The screenshots are 16:10 browser captures, so the
+          frame matches that ratio to show the whole site without cropping. */}
       <div className="mt-12 md:mt-16">
         {cover ? (
-          <div className="relative aspect-[16/10] w-full md:aspect-[2/1]">
+          <div className="relative aspect-[16/10] w-full">
             <Image
               src={cover}
               alt={`${fm.title} cover`}
               fill
               priority
               unoptimized
-              className="object-cover"
+              sizes="100vw"
+              className="object-cover object-top"
             />
           </div>
         ) : (
           <div
             aria-hidden
-            className="aspect-[16/10] w-full border-y border-rule bg-rule/40 md:aspect-[2/1]"
+            className="aspect-[16/10] w-full border-y border-rule bg-rule/40"
           />
         )}
       </div>
