@@ -1,0 +1,66 @@
+---
+title: Teaching problem solving before syntax
+description: COS 102 spends its first week on the problem, not the Python. Here is why.
+date: "2026-04-20"
+tags: [teaching, python]
+---
+
+Most introductory programming courses open with syntax: variables, then loops,
+then functions, and somewhere near the end, if there is time, a word about how
+to actually think through a problem. I teach COS 102 at Pan-Atlantic University
+the other way around. Week one has almost no code in it. We spend it on the
+problem.
+
+## Syntax is the easy part
+
+The reason is simple. A beginner who cannot write a `for` loop will learn to
+write one in an afternoon. A beginner who reaches for code before they
+understand what they are being asked to do will write a fluent, well-formatted
+program that solves the wrong problem, and they will do it again next week.
+Syntax is a lookup. The thinking is the skill, and the skill is what a course
+has to build.
+
+So the first thing we practise is writing the solution in plain language,
+before any Python. Analyse the problem, develop an algorithm as ordered steps
+or a flowchart, then translate it to code, then test and debug. Code is step
+three of four. By the time a student opens an editor, the hard decisions are
+already made.
+
+## Well-defined and ill-defined problems
+
+The distinction the course leans on hardest is between well-defined and
+ill-defined problems. A well-defined problem states its starting point, its
+legal moves, and its goal. The Tower of Hanoi is the clean example: you know
+where you begin, what you may do, and what finished looks like. An ill-defined
+problem gives you none of that. "Write a program for music" names neither a
+start nor a goal.
+
+Most real problems arrive ill-defined, and the work students skip is turning
+them into well-defined ones before writing anything. A surprising amount of
+"I don't know how to code this" is really "I have not yet decided what this is
+asking." Naming the start state and the goal state is often the entire
+unblock.
+
+## The tools arrive when a problem needs them
+
+After that first week the course builds in the usual order, but each tool shows
+up because a problem demands it, not because it is the next chapter. Data types
+and conversion arrive when input has to be read and trusted. Control flow
+arrives when a solution has to branch. Functions arrive when the same steps
+repeat and the program gets hard to read in one block. Object-oriented
+programming arrives when state and the things that act on it belong together.
+NumPy and Pandas arrive when the data outgrows plain lists. The syntax is never
+the point; it is the smallest tool that closes the gap the problem opened.
+
+This is also why the heuristics from week one keep coming back: trial and
+error when the options are few, means-end analysis to break a big gap into
+moves that each close part of it, stepping away from a problem so you return to
+it fresh. They are not Python techniques. They are problem-solving techniques
+that happen to be taught in a Python class.
+
+## Why it is public
+
+The full week-by-week notes are open on the [teaching page](/teaching). I keep
+them public for two reasons. Students use them to catch up without asking, and
+the next person who has to teach an intro course can take what works and skip
+what I got wrong. A syllabus is more useful in the open than in a drawer.
